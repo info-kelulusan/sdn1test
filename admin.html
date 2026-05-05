@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Admin - Input Data Kelulusan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Goldman:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .bg-circle {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.2;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .circle1 { width: 350px; height: 350px; background: #38bdf8; top: -100px; left: -80px; }
+    .circle2 { width: 500px; height: 500px; background: #a855f7; bottom: -150px; right: -100px; }
+    .container {
+      max-width: 800px;
+      width: 100%;
+      position: relative;
+      z-index: 10;
+    }
+    .glass-card {
+      backdrop-filter: blur(18px);
+      background: rgba(15, 25, 45, 0.65);
+      border-radius: 2rem;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      box-shadow: 0 25px 45px rgba(0,0,0,0.3);
+      padding: 2rem 1.8rem;
+      margin-bottom: 2rem;
+    }
+    h2, h3 {
+      background: linear-gradient(135deg, #e0f2fe, #7dd3fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .input-field {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid #334155;
+      border-radius: 2rem;
+      padding: 0.8rem 1.2rem;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      width: 100%;
+      transition: 0.2s;
+    }
+    .input-field:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(56,189,248,0.3);
+    }
+    select.input-field {
+      appearance: none;
+      cursor: pointer;
+    }
+    .btn {
+      border: none;
+      border-radius: 3rem;
+      padding: 0.8rem 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .btn-primary {
+      background: linear-gradient(100deg, #0ea5e9, #3b82f6);
+      color: white;
+    }
+    .btn-primary:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 20px #38bdf8;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+    }
+    .btn-outline:hover {
+      background: rgba(56,189,248,0.1);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .flex-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid #334155;
+    }
+    th {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-box {
+      background: #111827;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid #38bdf8;
+    }
+    .modal-box p {
+      margin: 1rem 0;
+      color: #cbd5e1;
+      white-space: pre-line;
+      text-align: left;
+      line-height: 1.6;
+    }
+    .hidden {
+      display: none;
+    }
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0.2rem 0.5rem;
+      transition: 0.2s;
+    }
+    .icon-btn:hover {
+      transform: scale(1.2);
+    }
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 11000;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(56,189,248,0.3);
+      border-top: 3px solid #38bdf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status-lulus {
+      background: rgba(5, 150, 105, 0.2);
+      color: #34d399;
+    }
+    .status-tidak {
+      background: rgba(220, 38, 38, 0.2);
+      color: #f87171;
+    }
+    @media (max-width: 600px) {
+      .glass-card { padding: 1.2rem; }
+      .flex-row { flex-direction: column; }
+      table { font-size: 0.75rem; }
+      th, td { padding: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-circle circle1"></div>
+<div class="bg-circle circle2"></div>
+
+<div class="container">
+  <!-- FORM DATA SEKOLAH -->
+  <div class="glass-card">
+    <h2>🏫 Data Sekolah</h2>
+    <div class="form-group">
+      <label>Nama Sekolah</label>
+      <input type="text" id="namaSekolah" class="input-field" placeholder="Contoh: PKBM Kuntum Mekar">
+    </div>
+    <div class="form-group">
+      <label>Nama Kepala Sekolah</label>
+      <input type="text" id="namaKepsek" class="input-field" placeholder="Contoh: Ritha Gani, S.Pd, M.Pd">
+    </div>
+    <button id="btnSimpanSekolah" class="btn btn-primary">💾 Simpan Data Sekolah</button>
+    <p id="statusSekolah" style="margin-top: 0.8rem; font-size: 0.8rem; color: #34d399; min-height: 20px;"></p>
+  </div>
+
+  <!-- FORM INPUT MANUAL -->
+  <div class="glass-card">
+    <h2>📝 Input Peserta Didik (Manual)</h2>
+    <div class="form-group">
+      <label>Nama</label>
+      <input type="text" id="namaInput" class="input-field" placeholder="Nama lengkap">
+    </div>
+    <div class="form-group">
+      <label>NISN</label>
+      <input type="text" id="nisnInput" class="input-field" placeholder="1234567890">
+    </div>
+    <div class="form-group">
+      <label>Tempat Lahir</label>
+      <input type="text" id="tempatLahirInput" class="input-field" placeholder="Kota/Kabupaten">
+    </div>
+    <div class="form-group">
+      <label>Tanggal Lahir</label>
+      <input type="text" id="tanggalLahirInput" class="input-field" placeholder="DD/MM/YYYY">
+    </div>
+    <div class="form-group">
+      <label>Status</label>
+      <select id="statusInput" class="input-field">
+        <option value="Lulus">Lulus</option>
+        <option value="">Tidak Lulus (Kosongkan)</option>
+      </select>
+    </div>
+    <button id="btnTambahManual" class="btn btn-primary">➕ Tambahkan ke Spreadsheet</button>
+    <p id="statusInputManual" style="margin-top: 0.8rem; font-size: 0.8rem; color: #34d399; min-height: 20px;"></p>
+  </div>
+
+  <!-- UPLOAD EXCEL -->
+  <div class="glass-card">
+    <h2>📤 Upload File Excel</h2>
+    <div class="flex-row">
+      <button id="btnUnduhFormat" class="btn btn-outline">⬇️ Unduh Format</button>
+      <button id="btnUploadExcel" class="btn btn-primary" disabled>📁 Upload File</button>
+    </div>
+    <input type="file" id="fileExcelInput" accept=".xlsx, .xls, .csv" class="hidden">
+    <p style="margin-top: 1rem; font-size: 0.8rem; color: #94a3b8;">*Format: Nama, NISN, Tempat Lahir, Tanggal Lahir, Status</p>
+    <p id="statusUpload" style="margin-top: 0.8rem; font-size: 0.8rem; color: #34d399; min-height: 20px;"></p>
+  </div>
+
+  <!-- TABEL DATA (PREVIEW LOKAL) -->
+  <div class="glass-card">
+    <h2>📋 Data Peserta Didik (Preview)</h2>
+    <p style="text-align: center; color: #94a3b8; font-size: 0.8rem; margin-bottom: 1rem;">Data yang sudah dikirim ke Spreadsheet</p>
+    <div style="overflow-x: auto;">
+      <table id="tabelData">
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>NISN</th>
+            <th>Tempat Lahir</th>
+            <th>Tanggal Lahir</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tabelBody">
+          <tr><td colspan="6" style="text-align:center; color:#64748b;">Belum ada data</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PESAN -->
+<div id="modalPesan" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3 id="modalTitle" style="color:#38bdf8;">Informasi</h3>
+    <p id="modalText"></p>
+    <button id="btnTutupModal" class="btn btn-primary" style="width:100%; margin-top:1rem;">Tutup</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loadingOverlay" class="loading-overlay hidden">
+  <div class="spinner"></div>
+  <p style="color:#38bdf8; font-weight:500;">Mengirim data...</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+  // ============ KONFIGURASI ============
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWAsabHqWTtxym8KC89PlLIzba0epq6JRB3TrxKGgH2lb62khAs_DsHYFAlxZ5kXMA/exec';
+
+  // ============ STATE ============
+  let dataPeserta = [];
+  let sudahUnduhFormat = false;
+
+  // ============ UTILITY FUNCTIONS ============
+  function tampilkanLoading() {
+    document.getElementById('loadingOverlay').classList.remove('hidden');
+  }
+
+  function sembunyikanLoading() {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+  }
+
+  function tampilkanModal(title, text) {
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalText').innerText = text;
+    document.getElementById('modalPesan').classList.remove('hidden');
+  }
+
+  function tampilkanStatus(elementId, text, isError = false) {
+    const el = document.getElementById(elementId);
+    el.style.color = isError ? '#f87171' : '#34d399';
+    el.innerText = text;
+    setTimeout(() => {
+      el.innerText = '';
+    }, 5000);
+  }
+
+  document.getElementById('btnTutupModal').addEventListener('click', () => {
+    document.getElementById('modalPesan').classList.add('hidden');
+  });
+
+  // Tutup modal dengan klik di luar
+  document.getElementById('modalPesan').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modalPesan')) {
+      document.getElementById('modalPesan').classList.add('hidden');
+    }
+  });
+
+  // ============ LOAD DATA SEKOLAH SAAT HALAMAN DIBUKA ============
+  async function loadDataSekolah() {
+    try {
+      const response = await fetch(`${APPS_SCRIPT_URL}?action=getSekolah`);
+      const data = await response.json();
+      if (data.success) {
+        document.getElementById('namaSekolah').value = data.namaSekolah || '';
+        document.getElementById('namaKepsek').value = data.namaKepsek || '';
+      }
+    } catch (err) {
+      console.error('Gagal load data sekolah:', err);
+    }
+  }
+
+  // ============ SIMPAN DATA SEKOLAH ============
+  document.getElementById('btnSimpanSekolah').addEventListener('click', async () => {
+    const namaSekolah = document.getElementById('namaSekolah').value.trim();
+    const namaKepsek = document.getElementById('namaKepsek').value.trim();
+
+    if (!namaSekolah || !namaKepsek) {
+      tampilkanStatus('statusSekolah', '⚠️ Nama Sekolah dan Kepala Sekolah wajib diisi!', true);
+      return;
+    }
+
+    tampilkanLoading();
+    try {
+      const params = new URLSearchParams({
+        action: 'updateSekolah',
+        namaSekolah: namaSekolah,
+        namaKepsek: namaKepsek
+      });
+
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: params
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        tampilkanStatus('statusSekolah', '✅ Data sekolah berhasil disimpan!');
+      } else {
+        tampilkanStatus('statusSekolah', '❌ Gagal: ' + (result.error || 'Error tidak diketahui'), true);
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      tampilkanStatus('statusSekolah', '❌ Gagal menyimpan data sekolah', true);
+    } finally {
+      sembunyikanLoading();
+    }
+  });
+
+  // ============ UNDUH FORMAT ============
+  document.getElementById('btnUnduhFormat').addEventListener('click', () => {
+    sudahUnduhFormat = true;
+    document.getElementById('btnUploadExcel').disabled = false;
+    
+    const header = "Nama,NISN,Tempat Lahir,Tanggal Lahir,Status";
+    const contoh = "Fulan,12341234,Gorontalo,12/01/2010,Lulus";
+    const csvContent = header + "\n" + contoh;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'format_data_peserta.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    tampilkanModal(
+      "✅ Format Terunduh",
+      "Contoh pengisian Format :\n\nNama : Fulan\nNISN : 12341234\nTempat Lahir : Gorontalo\nTanggal Lahir : 12/01/2010\nStatus : Lulus (boleh di kosongkan apabila peserta didik Tidak Lulus)"
+    );
+  });
+
+  // ============ UPLOAD EXCEL ============
+  document.getElementById('btnUploadExcel').addEventListener('click', () => {
+    if (!sudahUnduhFormat) {
+      tampilkanModal("⚠️ Perhatian", "Anda belum Unduh Format. Silahkan Unduh Format terlebih dahulu");
+      return;
+    }
+    document.getElementById('fileExcelInput').click();
+  });
+
+  document.getElementById('fileExcelInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        
+        if (jsonData.length < 2) {
+          tampilkanModal("❌ Error", "File kosong atau tidak memiliki data.");
+          return;
+        }
+        
+        tampilkanLoading();
+        let countSuccess = 0;
+        let countFailed = 0;
+        const newData = [];
+        
+        for (let i = 1; i < jsonData.length; i++) {
+          const row = jsonData[i];
+          if (row && row.length >= 4 && row[0] && row[1]) {
+            const peserta = {
+              nama: String(row[0]).trim(),
+              nisn: String(row[1]).trim(),
+              tempatLahir: String(row[2] || '').trim(),
+              tanggalLahir: String(row[3] || '').trim(),
+              status: String(row[4] || '').trim()
+            };
+            
+            // Kirim langsung ke Apps Script
+            const success = await kirimDataSiswa(peserta);
+            if (success) {
+              newData.push(peserta);
+              countSuccess++;
+            } else {
+              countFailed++;
+            }
+          }
+        }
+        
+        dataPeserta.push(...newData);
+        renderTabel();
+        sembunyikanLoading();
+        
+        let msg = `${countSuccess} data berhasil dikirim ke Spreadsheet.`;
+        if (countFailed > 0) {
+          msg += `\n${countFailed} data gagal (mungkin NISN duplikat).`;
+        }
+        tampilkanStatus('statusUpload', msg, countFailed > 0);
+        
+      } catch (err) {
+        sembunyikanLoading();
+        tampilkanModal("❌ Error", "Gagal membaca file. Pastikan format sesuai.");
+        console.error(err);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    e.target.value = '';
+  });
+
+  // ============ TAMBAH MANUAL (KIRIM KE SPREADSHEET) ============
+  document.getElementById('btnTambahManual').addEventListener('click', async () => {
+    const nama = document.getElementById('namaInput').value.trim();
+    const nisn = document.getElementById('nisnInput').value.trim();
+    const tempatLahir = document.getElementById('tempatLahirInput').value.trim();
+    const tanggalLahir = document.getElementById('tanggalLahirInput').value.trim();
+    const status = document.getElementById('statusInput').value;
+    
+    if (!nama || !nisn) {
+      tampilkanStatus('statusInputManual', '⚠️ Nama dan NISN wajib diisi!', true);
+      return;
+    }
+    
+    const peserta = { nama, nisn, tempatLahir, tanggalLahir, status };
+    
+    tampilkanLoading();
+    const success = await kirimDataSiswa(peserta);
+    sembunyikanLoading();
+    
+    if (success) {
+      dataPeserta.push(peserta);
+      renderTabel();
+      
+      // Reset form
+      document.getElementById('namaInput').value = '';
+      document.getElementById('nisnInput').value = '';
+      document.getElementById('tempatLahirInput').value = '';
+      document.getElementById('tanggalLahirInput').value = '';
+      document.getElementById('statusInput').value = 'Lulus';
+      
+      tampilkanStatus('statusInputManual', '✅ Data berhasil dikirim ke Spreadsheet!');
+    } else {
+      tampilkanStatus('statusInputManual', '❌ Gagal mengirim data (mungkin NISN sudah terdaftar)', true);
+    }
+  });
+
+  // ============ KIRIM DATA SISWA KE APPS SCRIPT ============
+  async function kirimDataSiswa(peserta) {
+    try {
+      const params = new URLSearchParams({
+        action: 'addSiswa',
+        nama: peserta.nama,
+        nisn: peserta.nisn,
+        tempatLahir: peserta.tempatLahir,
+        tanggalLahir: peserta.tanggalLahir,
+        status: peserta.status
+      });
+
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: params
+      });
+      const result = await response.json();
+      return result.success === true;
+    } catch (err) {
+      console.error('Error kirim data:', err);
+      return false;
+    }
+  }
+
+  // ============ RENDER TABEL ============
+  function renderTabel() {
+    const tbody = document.getElementById('tabelBody');
+    if (dataPeserta.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b;">Belum ada data</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = dataPeserta.map((p, index) => `
+      <tr>
+        <td>${escapeHtml(p.nama)}</td>
+        <td>${escapeHtml(p.nisn)}</td>
+        <td>${escapeHtml(p.tempatLahir) || '-'}</td>
+        <td>${escapeHtml(p.tanggalLahir) || '-'}</td>
+        <td>
+          <span class="status-badge ${p.status === 'Lulus' ? 'status-lulus' : 'status-tidak'}">
+            ${p.status === 'Lulus' ? '✅ Lulus' : '❌ Tidak Lulus'}
+          </span>
+        </td>
+        <td>
+          <button class="icon-btn" onclick="copyData(${index})" title="Copy teks pengumuman">📋</button>
+          <button class="icon-btn" onclick="deleteData(${index})" title="Hapus dari tampilan">🗑️</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // ============ COPY DATA ============
+  function copyData(index) {
+    const p = dataPeserta[index];
+    const namaSekolah = document.getElementById('namaSekolah').value.trim() || '(Nama Sekolah)';
+    const namaKepsek = document.getElementById('namaKepsek').value.trim() || '(Nama Kepala Sekolah)';
+    const namaSekolahSlug = namaSekolah.toLowerCase().replace(/\s+/g, '');
+    
+    const teks = `📢 PENGUMUMAN KELULUSAN
+${namaSekolah}
+Tahun Ajaran 2025/2026
+
+Assalamu'alaikum warahmatullahi wabarakatuh,
+
+Dengan ini kami informasikan bahwa pengumuman kelulusan peserta didik ${namaSekolah} Tahun Ajaran 2025/2026 dapat diakses melalui link berikut:
+https://infokelulusan.github.io/${namaSekolahSlug}
+
+Nama  :  ${p.nama}
+NISN    :  ${p.nisn}
+
+📝 Tata Cara Melihat Hasil Kelulusan:
+1. Klik link pengumuman di atas
+2. Masukkan NISN peserta didik
+3. Klik tombol cek/lihat hasil
+
+Demikian informasi ini disampaikan. Terima kasih atas perhatian dan kerjasamanya.
+
+Tertanda,
+Kepala Sekolah
+${namaSekolah}
+
+${namaKepsek}
+
+Wassalamu'alaikum warahmatullahi wabarakatuh.`;
+
+    navigator.clipboard.writeText(teks).then(() => {
+      tampilkanModal("✅ Berhasil", "Teks pengumuman berhasil disalin ke clipboard!");
+    }).catch(() => {
+      const textarea = document.createElement('textarea');
+      textarea.value = teks;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      tampilkanModal("✅ Berhasil", "Teks pengumuman berhasil disalin ke clipboard!");
+    });
+  }
+
+  // ============ DELETE DATA ============
+  function deleteData(index) {
+    const peserta = dataPeserta[index];
+    if (confirm(`Hapus data ${peserta.nama} (NISN: ${peserta.nisn}) dari tampilan?\n\nCatatan: Data tetap ada di Spreadsheet.`)) {
+      dataPeserta.splice(index, 1);
+      renderTabel();
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[m]);
+  }
+
+  // ============ INIT ============
+  document.addEventListener('DOMContentLoaded', async () => {
+    document.getElementById('btnUploadExcel').disabled = true;
+    
+    // Load data sekolah dari Spreadsheet
+    await loadDataSekolah();
+    
+    // Set default jika kosong
+    if (!document.getElementById('namaSekolah').value) {
+      document.getElementById('namaSekolah').value = 'PKBM Kuntum Mekar';
+    }
+    if (!document.getElementById('namaKepsek').value) {
+      document.getElementById('namaKepsek').value = 'Ritha Gani, S.Pd, M.Pd';
+    }
+  });
+</script>
+</body>
+</html>
