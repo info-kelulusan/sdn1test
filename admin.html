@@ -226,9 +226,22 @@
       table { font-size: 0.75rem; }
       th, td { padding: 0.5rem; }
     }
+    .loading-overlay.hidden {
+        display: none !important;
+    }
   </style>
 </head>
 <body>
+  <script>
+    // FORCE HIDE LOADING - jika ada yang error
+    setTimeout(function() {
+      var loadingEl = document.getElementById('loadingOverlay');
+      if (loadingEl && !loadingEl.classList.contains('hidden')) {
+        loadingEl.classList.add('hidden');
+        console.log('⚠️ Loading overlay force-hidden (fallback)');
+      }
+    }, 3000); // hide setelah 3 detik jika masih muncul
+  </script>
 
 <div class="bg-circle circle1"></div>
 <div class="bg-circle circle2"></div>
@@ -341,11 +354,21 @@
 
   // ============ UTILITY FUNCTIONS ============
   function tampilkanLoading() {
-    document.getElementById('loadingOverlay').classList.remove('hidden');
+      // Hapus dulu semua loading overlay yang mungkin tersisa
+      document.querySelectorAll('.loading-overlay').forEach(el => el.remove());
+      
+      // Baru tampilkan yang asli
+      const loadingEl = document.getElementById('loadingOverlay');
+      if (loadingEl) {
+          loadingEl.classList.remove('hidden');
+      }
   }
 
   function sembunyikanLoading() {
-    document.getElementById('loadingOverlay').classList.add('hidden');
+      // Sembunyikan SEMUA loading overlay
+      document.querySelectorAll('.loading-overlay').forEach(el => {
+          el.classList.add('hidden');
+      });
   }
 
   function tampilkanModal(title, text) {
@@ -385,7 +408,24 @@
       }
     } catch (err) {
       console.error('Gagal load data sekolah:', err);
+      // Fallback: tetap isi dengan default, jangan stuck
+      document.getElementById('namaSekolah').value = 'testes';
+      document.getElementById('namaKepsek').value = 'testsdsdf';
     }
+  }
+
+  // ============ LOAD DATA SISWA DARI SPREADSHEET ============
+  async function loadDataSiswa() {
+      try {
+          const response = await fetch(`${APPS_SCRIPT_URL}?action=getAllSiswa`);
+          const data = await response.json();
+          if (data.success && data.siswa) {
+              dataPeserta = data.siswa;
+              renderTabel();
+          }
+      } catch (err) {
+          console.error('Gagal load data siswa:', err);
+      }
   }
 
   // ============ SIMPAN DATA SEKOLAH ============
@@ -674,18 +714,23 @@ Wassalamu'alaikum warahmatullahi wabarakatuh.`;
 
   // ============ INIT ============
   document.addEventListener('DOMContentLoaded', async () => {
-    document.getElementById('btnUploadExcel').disabled = true;
-    
-    // Load data sekolah dari Spreadsheet
-    await loadDataSekolah();
-    
-    // Set default jika kosong
-    if (!document.getElementById('namaSekolah').value) {
-      document.getElementById('namaSekolah').value = 'PKBM Kuntum Mekar';
-    }
-    if (!document.getElementById('namaKepsek').value) {
-      document.getElementById('namaKepsek').value = 'Ritha Gani, S.Pd, M.Pd';
-    }
+      document.getElementById('btnUploadExcel').disabled = true;
+      
+      // Load data sekolah dari Spreadsheet (dengan fallback jika gagal)
+      await loadDataSekolah();
+      // Load data siswa dari spreadsheet
+      await loadDataSiswa();
+      
+      // Set default jika masih kosong
+      if (!document.getElementById('namaSekolah').value) {
+        document.getElementById('namaSekolah').value = 'PKBM Kuntum Mekar';
+      }
+      if (!document.getElementById('namaKepsek').value) {
+        document.getElementById('namaKepsek').value = 'Ritha Gani, S.Pd, M.Pd';
+      }
+      
+      // Pastikan loading disembunyikan saat init
+      sembunyikanLoading();
   });
 </script>
 </body>
