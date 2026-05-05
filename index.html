@@ -95,8 +95,15 @@ body {
     opacity: 0;
     transform: scale(0.85) translateY(10px);
     animation:
-        fadeInScale 1.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards,
+        fadeInScale 1.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) 3s forwards,
         glowCinematic 2.2s ease-in-out infinite alternate;
+}
+
+#welcomeText {
+    visibility: hidden;
+}
+#welcomeText.show {
+    visibility: visible;
 }
 
 /* cinematic glow lebih halus */
@@ -332,25 +339,6 @@ body {
     color: #a5f3fc;
 }
 
-/* Footer link kecil untuk Buat Pas Foto */
-.pasfoto-footer {
-    margin-top: 1.2rem;
-    text-align: center;
-}
-.pasfoto-link {
-    font-size: 0.75rem;
-    color: #2dd4bf;
-    text-decoration: none;
-    cursor: pointer;
-    transition: 0.2s;
-    display: inline-block;
-    opacity: 0.8;
-}
-.pasfoto-link:hover {
-    opacity: 1;
-    text-decoration: underline;
-}
-
 /* Tombol tutup full width */
 .btn-close-full {
     background: #475569;
@@ -417,6 +405,7 @@ body {
     .data-nama { font-size: 1.5rem; }
     .data-nisn { font-size: 1rem; }
 }
+
 </style>
 </head>
 <body>
@@ -427,7 +416,7 @@ body {
 
 <div id="welcomeScreen">
     <div class="welcome-wrapper">
-        <h1 class="welcome-text" id="welcomeText">PKBM KUNTUM MEKAR</h1>
+        <h1 class="welcome-text" id="welcomeText"></h1>
     </div>
 </div>
 
@@ -436,7 +425,7 @@ body {
         <div class="glass-card">
             <div class="search-area">
                 <h2 id="judulPengumuman">PENGUMUMAN KELULUSAN</h2>
-                <div class="subtitle" id="subtitleSekolah">PKBM Kuntum Mekar - Kecamatan Tapa</div>
+                <div class="subtitle" id="subtitleSekolah"></div>
                 <div class="input-group">
                     <input type="text" id="nisnInput" class="input-field" placeholder="Masukkan NISN Anda..." autocomplete="off">
                     <button id="searchBtn" class="btn-primary">🔍 Cari NISN & Lihat Hasil</button>
@@ -450,14 +439,14 @@ body {
 <script>
 // ========== KONFIGURASI ==========
 // GANTI DENGAN URL WEB APP APPS SCRIPT ANDA!
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAX8do5hurFNFUCA71h3o6ixUz1WX9yvMd7-ML5TH7O09vl29EF-KcsxQUC1GvIlZHzA/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWAsabHqWTtxym8KC89PlLIzba0epq6JRB3TrxKGgH2lb62khAs_DsHYFAlxZ5kXMA/exec';
 
 let currentStudentData = null;
 
 // ========== DATA SEKOLAH (DINAMIS DARI SPREADSHEET) ==========
 let sekolahData = {
-    namaSekolah: 'PKBM Kuntum Mekar',
-    namaKepsek: 'Ritha Gani, S.Pd, M.Pd'
+    namaSekolah: '',
+    namaKepsek: ''
 };
 
 // ================= AMBIL DATA SEKOLAH DARI APPS SCRIPT =================
@@ -466,8 +455,8 @@ async function fetchDataSekolah() {
         const response = await fetch(`${APPS_SCRIPT_URL}?action=getSekolah`);
         const data = await response.json();
         if (data.success) {
-            sekolahData.namaSekolah = data.namaSekolah || 'PKBM Kuntum Mekar';
-            sekolahData.namaKepsek = data.namaKepsek || 'Ritha Gani, S.Pd, M.Pd';
+            sekolahData.namaSekolah = data.namaSekolah;
+            sekolahData.namaKepsek = data.namaKepsek;
         }
     } catch (err) {
         console.error('Gagal mengambil data sekolah:', err);
@@ -479,16 +468,16 @@ async function fetchDataSekolah() {
 function updateUISekolah() {
     const ns = sekolahData.namaSekolah;
     
-    // Update welcome screen
     const welcomeEl = document.getElementById('welcomeText');
-    if (welcomeEl) welcomeEl.innerText = ns.toUpperCase();
+    if (welcomeEl) {
+        welcomeEl.innerText = ns.toUpperCase();
+        welcomeEl.classList.add('show'); // ← TAMPILKAN setelah teks di-set
+    }
     
-    // Update title halaman
     document.getElementById('pageTitle').innerText = `${ns} - Pengumuman Kelulusan`;
     
-    // Update subtitle
     const subtitleEl = document.getElementById('subtitleSekolah');
-    if (subtitleEl) subtitleEl.innerText = `${ns} - Kecamatan Tapa`;
+    if (subtitleEl) subtitleEl.innerText = `${ns}`;
 }
 
 // ================= TEXT TO SPEECH =================
@@ -574,7 +563,7 @@ function showGraduationCard(student) {
                     <div class="data-nisn">${escapeHtml(student.nisn)}</div>
                     <div class="data-ttl">${escapeHtml(tempatTanggal)}</div>
                 </div>
-                <div class="ketua">${escapeHtml(ns)}, Kecamatan Tapa</div>
+                <div class="ketua">${escapeHtml(ns)}</div>
                 <button class="btn-close-full" id="closeModalBtn">Tutup</button>
             </div>
         `;
@@ -595,7 +584,7 @@ function showGraduationCard(student) {
             <div class="lulus-badge">SELAMAT</div>
             <div style="font-size:1.6rem; font-weight:600; margin-bottom:4px;">Anda dinyatakan</div>
             <div style="font-size:2.5rem; font-weight:800; color:#facc15; letter-spacing:2px;">LULUS</div>
-            <div style="margin: 8px 0 12px; font-size:0.9rem;">Paket C Tahun Ajaran 2025/2026</div>
+            <div style="margin: 8px 0 12px; font-size:0.9rem;">Tahun Ajaran 2025/2026</div>
             
             <div class="data-center">
                 <div class="data-nama">${escapeHtml(student.nama)}</div>
@@ -604,14 +593,11 @@ function showGraduationCard(student) {
             </div>
             
             <div class="ketua">
-                Ketua ${escapeHtml(ns)}<br>Kecamatan Tapa<br><b>${escapeHtml(nks)}</b>
+                Ketua ${escapeHtml(ns)}<br><b>${escapeHtml(nks)}</b>
             </div>
             
             <button class="btn-close-full" id="closeModalFinalBtn">Tutup</button>
 
-            <div class="pasfoto-footer">
-                <a class="pasfoto-link" id="buatPasFotoLink">📸 Buat Pas Foto Sekarang !</a>
-            </div>
         </div>
     `;
     document.body.appendChild(modalDiv);
@@ -619,11 +605,6 @@ function showGraduationCard(student) {
     modalDiv.querySelector('#closeModalFinalBtn').addEventListener('click', () => {
         modalDiv.remove();
         window.location.reload();
-    });
-    
-    modalDiv.querySelector('#buatPasFotoLink').addEventListener('click', () => {
-        modalDiv.remove();
-        showPhotoConfirmation(student);
     });
 }
 
@@ -649,250 +630,6 @@ function formatTanggal(tanggalInput) {
     return tanggalInput;
 }
 
-function showPhotoConfirmation(student) {
-    removeExistingModals();
-    const confirmModal = document.createElement('div');
-    confirmModal.className = 'modal-confirm';
-    confirmModal.innerHTML = `
-        <div class="confirm-inner">
-            <h3 style="color:#38bdf8; margin-bottom:16px;">📸 Konfirmasi Pas Foto</h3>
-            <p style="margin-bottom:12px;">Pas Foto digunakan untuk keperluan dokumen seperti ijazah. Apakah Anda akan lanjut untuk membuat pasfoto ?</p>
-            <div class="confirm-btns">
-                <button id="confirmNo" class="btn-no">Tidak</button>
-                <button id="confirmYes" class="btn-yes">Ya, Lanjutkan</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(confirmModal);
-    
-    confirmModal.querySelector('#confirmNo').addEventListener('click', () => {
-        confirmModal.remove();
-        window.location.reload();
-    });
-    
-    confirmModal.querySelector('#confirmYes').addEventListener('click', () => {
-        confirmModal.remove();
-        const slugName = student.nama.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
-        sessionStorage.setItem("photoSessionData", JSON.stringify({ 
-            nama: student.nama, 
-            nisn: student.nisn,
-            tempatLahir: student.tempatLahir,
-            tanggalLahir: student.tanggalLahir
-        }));
-        window.open(`${window.location.origin}${window.location.pathname}?page=photo&id=${encodeURIComponent(slugName)}`, '_blank');
-    });
-}
-
-function renderPhotoStudioPage(studentData) {
-    const ns = sekolahData.namaSekolah;
-    const nks = sekolahData.namaKepsek;
-    
-    document.body.innerHTML = `
-        <div class="bg-circle circle1"></div>
-        <div class="bg-circle circle2"></div>
-        <div class="bg-circle circle3"></div>
-        <div style="max-width:500px; margin:5vh auto; position:relative; z-index:10; padding:20px;">
-            <div class="glass-card" style="padding:1.5rem;">
-                <h2 style="text-align:center; color:#38bdf8;">📷 Form Pas Foto</h2>
-                <p style="text-align:center; color:#94a3b8; margin-bottom:1rem;">${escapeHtml(ns)}</p>
-                <div class="data-center" style="margin: 1rem 0; text-align: center;">
-                    <div class="data-nama" style="font-size: 1.6rem; font-weight: 700; color: white; margin-bottom: 6px;" id="displayNama"></div>
-                    <div class="data-nisn" style="font-size: 1rem; color: #cbd5e1; letter-spacing: 1px;" id="displayNisn"></div>
-                </div>
-                <div style="display:flex; gap:12px; margin:20px 0;">
-                    <button id="cameraBtn" class="btn-primary" style="flex:1;">📸 Buka Kamera</button>
-                    <button id="uploadBtn" class="btn-primary" style="flex:1; background:#4b5563;">⬆️ Upload</button>
-                </div>
-                <div id="previewArea" style="margin:20px 0; text-align:center; min-height:140px; background:#0f172a; border-radius:24px; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:10px;">
-                    <p style="color:#9ca3af;">Preview foto akan muncul disini</p>
-                    <img id="imagePreview" style="max-width:100%; max-height:200px; border-radius:16px; display:none;">
-                </div>
-                <input type="file" id="fileInput" accept="image/*" style="display:none;">
-                <button id="kirimBtn" class="btn-close-full" style="background:#0e7c6b; margin-top: 1.5rem;">Kirim</button>
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('displayNama').innerText = studentData.nama;
-    document.getElementById('displayNisn').innerText = studentData.nisn;
-    
-    let currentImageBlob = null;
-    const previewImg = document.getElementById('imagePreview');
-    const previewText = document.querySelector('#previewArea p');
-    
-    document.getElementById('cameraBtn').addEventListener('click', async () => {
-        try {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.capture = 'environment';
-                input.onchange = (e) => {
-                    if (e.target.files[0]) {
-                        currentImageBlob = e.target.files[0];
-                        const url = URL.createObjectURL(currentImageBlob);
-                        previewImg.src = url;
-                        previewImg.style.display = 'block';
-                        if(previewText) previewText.style.display = 'none';
-                    }
-                };
-                input.click();
-                return;
-            }
-            
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            
-            const modalCamera = document.createElement('div');
-            modalCamera.className = 'modal-overlay';
-            modalCamera.style.zIndex = '30000';
-            modalCamera.innerHTML = `
-                <div class="success-card" style="max-width: 400px; padding: 1rem;">
-                    <video id="cameraVideo" autoplay playsinline style="width:100%; border-radius:16px; margin-bottom:1rem;"></video>
-                    <div style="display:flex; gap:12px;">
-                        <button id="captureBtn" class="btn-primary" style="flex:1;">📸 Ambil Foto</button>
-                        <button id="closeCameraBtn" class="btn-close-full" style="margin-top:0;">Tutup</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modalCamera);
-            
-            const videoElem = modalCamera.querySelector('#cameraVideo');
-            videoElem.srcObject = stream;
-            
-            modalCamera.querySelector('#captureBtn').addEventListener('click', () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = videoElem.videoWidth;
-                canvas.height = videoElem.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(videoElem, 0, 0, canvas.width, canvas.height);
-                
-                canvas.toBlob((blob) => {
-                    currentImageBlob = blob;
-                    const url = URL.createObjectURL(blob);
-                    previewImg.src = url;
-                    previewImg.style.display = 'block';
-                    if(previewText) previewText.style.display = 'none';
-                    
-                    stream.getTracks().forEach(track => track.stop());
-                    modalCamera.remove();
-                }, 'image/jpeg', 0.9);
-            });
-            
-            modalCamera.querySelector('#closeCameraBtn').addEventListener('click', () => {
-                stream.getTracks().forEach(track => track.stop());
-                modalCamera.remove();
-            });
-            
-        } catch (err) {
-            console.error('Gagal akses kamera:', err);
-            alert('Tidak dapat mengakses kamera. Pastikan izin kamera diberikan.\n\nFallback: Menggunakan upload file.');
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = (e) => {
-                if (e.target.files[0]) {
-                    currentImageBlob = e.target.files[0];
-                    const url = URL.createObjectURL(currentImageBlob);
-                    previewImg.src = url;
-                    previewImg.style.display = 'block';
-                    if(previewText) previewText.style.display = 'none';
-                }
-            };
-            input.click();
-        }
-    });
-    
-    document.getElementById('uploadBtn').addEventListener('click', () => {
-        document.getElementById('fileInput').click();
-    });
-    
-    document.getElementById('fileInput').addEventListener('change', (e) => {
-        if (e.target.files[0]) {
-            currentImageBlob = e.target.files[0];
-            const url = URL.createObjectURL(currentImageBlob);
-            previewImg.src = url;
-            previewImg.style.display = 'block';
-            if(previewText) previewText.style.display = 'none';
-        }
-    });
-    
-    document.getElementById('kirimBtn').addEventListener('click', async () => {
-        if (!currentImageBlob) {
-            alert("Silakan ambil atau unggah foto terlebih dahulu.");
-            return;
-        }
-        
-        const loadingUpload = document.createElement('div');
-        loadingUpload.className = 'loading-overlay';
-        loadingUpload.innerHTML = `
-            <div class="loading-spinner-large"></div>
-            <div class="loading-text">Mengupload foto ke server...</div>
-        `;
-        document.body.appendChild(loadingUpload);
-        
-        try {
-            const reader = new FileReader();
-            const base64Promise = new Promise((resolve) => {
-                reader.onloadend = () => {
-                    const base64 = reader.result.split(',')[1];
-                    resolve(base64);
-                };
-                reader.readAsDataURL(currentImageBlob);
-            });
-            
-            const base64Data = await base64Promise;
-            const nama = document.getElementById('displayNama').innerText;
-            const nisn = document.getElementById('displayNisn').innerText;
-            const fileName = `${nisn}_${nama.replace(/\s/g, '_')}_${Date.now()}.jpg`;
-            
-            const formData = new FormData();
-            formData.append('file', base64Data);
-            formData.append('fileName', fileName);
-            formData.append('nisn', nisn);
-            formData.append('nama', nama);
-            
-            const uploadResponse = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: formData
-            });
-            
-            const uploadResult = await uploadResponse.json();
-            loadingUpload.remove();
-            
-            if (uploadResult.success) {
-                const successModal = document.createElement('div');
-                successModal.className = 'modal-confirm';
-                successModal.innerHTML = `
-                    <div class="confirm-inner">
-                        <h3 style="color:#2dd4bf; margin-bottom:16px;">✅ Upload Berhasil!</h3>
-                        <p style="margin-bottom:12px;">Foto Anda telah tersimpan di Google Drive.</p>
-                        <button id="okContinueBtn" class="btn-yes" style="width:100%; margin-top:10px;">Lanjutkan ke WhatsApp</button>
-                    </div>
-                `;
-                document.body.appendChild(successModal);
-                
-                successModal.querySelector('#okContinueBtn').addEventListener('click', () => {
-                    successModal.remove();
-                    
-                    // Menggunakan data sekolah dinamis untuk WhatsApp
-                    const textWA = `Assalamualaikum. saya ${nama} (NISN: ${nisn}), peserta didik ${ns} mau melakukan pembayaran pas foto. Foto sudah diupload.`;
-                    const waNumber = "6289609745090";
-                    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(textWA)}`, '_blank');
-                    setTimeout(() => {
-                        window.location.href = window.location.pathname;
-                    }, 2000);
-                });
-            } else {
-                throw new Error(uploadResult.error || 'Upload gagal');
-            }
-            
-        } catch (error) {
-            loadingUpload.remove();
-            alert('Gagal mengupload foto: ' + error.message + '\n\nSilakan coba lagi.');
-        }
-    });
-}
-
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, function(m) {
@@ -903,44 +640,26 @@ function escapeHtml(str) {
     });
 }
 
-function handlePhotoPageRouting() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('page') === 'photo') {
-        const sessionData = sessionStorage.getItem("photoSessionData");
-        if (sessionData) {
-            const student = JSON.parse(sessionData);
-            sessionStorage.removeItem("photoSessionData");
-            renderPhotoStudioPage(student);
-        } else {
-            renderPhotoStudioPage({ nama: "Peserta", nisn: "----" });
-        }
-        return true;
-    }
-    return false;
-}
-
 // ================= INIT =================
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Ambil data sekolah DULU sebelum menampilkan apapun
     await fetchDataSekolah();
-
-    setTimeout(() => {
-        speakText(`Selamat datang peserta didik ${sekolahData.namaSekolah}`);
-    }, 800);
-
-    if (handlePhotoPageRouting()) return;
     
     const welcome = document.getElementById('welcomeScreen');
     const main = document.getElementById('mainContent');
-    
+
     setTimeout(() => {
         welcome.classList.add('fade-out');
         setTimeout(() => {
             welcome.style.display = 'none';
             main.classList.remove('hidden');
-            setTimeout(() => main.classList.add('show'), 80);
-        }, 800);
-    }, 2500);
+            setTimeout(() => {
+                main.classList.add('show');
+                // Pindah ke sini
+                speakText(`Selamat datang peserta didik ${sekolahData.namaSekolah}`);
+            }, 80);
+        }, 900);
+    }, 4400);
     
     const searchBtn = document.getElementById('searchBtn');
     const nisnInput = document.getElementById('nisnInput');
