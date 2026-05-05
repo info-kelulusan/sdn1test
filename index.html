@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title id="pageTitle">Info Kelulusan</title>
+<link href="https://fonts.googleapis.com/css2?family=Goldman:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ================= RESET & GLOBAL ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+    color: white;
+    overflow-x: hidden;
+    position: relative;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Blur background orbs */
+.bg-circle {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.2;
+    z-index: 0;
+    pointer-events: none;
+}
+.circle1 {
+    width: 350px;
+    height: 350px;
+    background: #38bdf8;
+    top: -100px;
+    left: -80px;
+}
+.circle2 {
+    width: 500px;
+    height: 500px;
+    background: #a855f7;
+    bottom: -150px;
+    right: -100px;
+}
+.circle3 {
+    width: 400px;
+    height: 400px;
+    background: #0ea5e9;
+    top: 40%;
+    left: 60%;
+}
+
+/* ================= WELCOME SCREEN ================= */
+#welcomeScreen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, #0f172a, #020617);
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+}
+.welcome-wrapper {
+    padding: 0 24px;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* update welcome-text */
+.welcome-text {
+    font-family: 'Goldman', system-ui, sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1;
+    text-align: center;
+    max-width: 100%;
+    padding: 0 16px;
+    background: linear-gradient(180deg, #e0f2fe, #38bdf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0;
+    transform: scale(0.85) translateY(10px);
+    animation:
+        fadeInScale 1.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards,
+        glowCinematic 2.2s ease-in-out infinite alternate;
+}
+
+/* cinematic glow lebih halus */
+@keyframes glowCinematic {
+    from {
+        text-shadow: 0 0 8px rgba(56,189,248,0.25);
+        filter: brightness(1);
+    }
+    to {
+        text-shadow: 0 0 22px rgba(56,189,248,0.55), 0 0 40px rgba(14,165,233,0.35);
+        filter: brightness(1.15);
+    }
+}
+@keyframes fadeInScale {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+@keyframes glowPulse {
+    from { text-shadow: 0 0 5px #38bdf8; }
+    to { text-shadow: 0 0 30px #38bdf8, 0 0 45px #0ea5e9; }
+}
+.fade-out {
+    animation: fadeOutAnim 0.9s forwards;
+}
+@keyframes fadeOutAnim {
+    to {
+        opacity: 0;
+        transform: scale(1.2);
+        visibility: hidden;
+    }
+}
+
+/* ================= MAIN CONTENT ================= */
+#mainContent {
+    opacity: 0;
+    transition: opacity 0.9s ease;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
+}
+#mainContent.show {
+    opacity: 1;
+}
+.hidden {
+    display: none;
+}
+
+/* ================= GLASS CARD (TENGAH VERTIKAL) ================= */
+.glass-card {
+    backdrop-filter: blur(18px);
+    background: rgba(15, 25, 45, 0.65);
+    border-radius: 2.5rem;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 25px 45px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.08);
+    padding: 2rem 1.8rem;
+    transition: all 0.2s;
+}
+
+/* Container utama untuk membuat glass-card di tengah vertikal */
+.main-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.search-area {
+    text-align: center;
+}
+.search-area h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #e0f2fe, #7dd3fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+}
+.subtitle {
+    color: #94a3b8;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+}
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.input-field {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid #334155;
+    border-radius: 2rem;
+    padding: 1rem 1.5rem;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.2s;
+}
+.input-field:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56,189,248,0.4);
+    background: rgba(255,255,255,0.12);
+}
+.btn-primary {
+    background: linear-gradient(100deg, #0ea5e9, #3b82f6);
+    border: none;
+    border-radius: 3rem;
+    padding: 1rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: white;
+    transition: 0.2s;
+    margin-top: 0.5rem;
+    box-shadow: 0 5px 12px rgba(14,165,233,0.3);
+}
+.btn-primary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px #38bdf8;
+}
+
+/* ================= LOADING OVERLAY ================= */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 30000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeInModal 0.3s ease;
+}
+.loading-spinner-large {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(56, 189, 248, 0.2);
+    border-top: 4px solid #38bdf8;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+.loading-text {
+    color: #38bdf8;
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ================= MODAL ================= */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
+    padding: 20px;
+    animation: fadeModal 0.3s ease;
+}
+@keyframes fadeModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.success-card {
+    max-width: 500px;
+    width: 100%;
+    background: linear-gradient(145deg, #0f172a, #030617);
+    border-radius: 2rem;
+    border: 1px solid rgba(56,189,248,0.6);
+    padding: 2rem 1.8rem;
+    box-shadow: 0 30px 50px rgba(0,0,0,0.5);
+    text-align: center;
+    animation: slideUp 0.4s;
+}
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.lulus-badge {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #facc15;
+    text-shadow: 0 0 6px #fbbf24;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+}
+
+/* DATA CENTER - Tanpa label, hanya value dengan ukuran berbeda */
+.data-center {
+    margin: 1.5rem 0;
+    text-align: center;
+}
+.data-nama {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    word-break: break-word;
+}
+.data-nisn {
+    font-size: 1.1rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+}
+.data-ttl {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin-top: 0.3rem;
+}
+
+.ketua {
+    margin-top: 1.5rem;
+    border-top: 1px dashed #334155;
+    padding-top: 1rem;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #a5f3fc;
+}
+
+/* Footer link kecil untuk Buat Pas Foto */
+.pasfoto-footer {
+    margin-top: 1.2rem;
+    text-align: center;
+}
+.pasfoto-link {
+    font-size: 0.75rem;
+    color: #2dd4bf;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-block;
+    opacity: 0.8;
+}
+.pasfoto-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+/* Tombol tutup full width */
+.btn-close-full {
+    background: #475569;
+    border: none;
+    border-radius: 3rem;
+    padding: 0.9rem 1rem;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    color: white;
+    transition: 0.2s;
+    width: 100%;
+    margin-top: 1rem;
+}
+.btn-close-full:hover {
+    background: #334155;
+    transform: scale(1.01);
+}
+
+.modal-confirm {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 21000;
+    padding: 1rem;
+}
+.confirm-inner {
+    background: #111827;
+    max-width: 400px;
+    border-radius: 2rem;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid #38bdf8;
+}
+.confirm-btns {
+    display: flex;
+    gap: 16px;
+    margin-top: 28px;
+}
+.confirm-btns button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 50px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+.btn-yes {
+    background: #0ea5e9;
+    color: white;
+}
+.btn-no {
+    background: #334155;
+    color: white;
+}
+
+@media (max-width: 550px) {
+    .welcome-text { font-size: 42px; letter-spacing: 4px; }
+    .glass-card { padding: 1.5rem; }
+    .data-nama { font-size: 1.5rem; }
+    .data-nisn { font-size: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-circle circle1"></div>
+<div class="bg-circle circle2"></div>
+<div class="bg-circle circle3"></div>
+
+<div id="welcomeScreen">
+    <div class="welcome-wrapper">
+        <h1 class="welcome-text" id="welcomeText">PKBM KUNTUM MEKAR</h1>
+    </div>
+</div>
+
+<div id="mainContent" class="hidden">
+    <div class="main-container">
+        <div class="glass-card">
+            <div class="search-area">
+                <h2 id="judulPengumuman">PENGUMUMAN KELULUSAN</h2>
+                <div class="subtitle" id="subtitleSekolah">PKBM Kuntum Mekar - Kecamatan Tapa</div>
+                <div class="input-group">
+                    <input type="text" id="nisnInput" class="input-field" placeholder="Masukkan NISN Anda..." autocomplete="off">
+                    <button id="searchBtn" class="btn-primary">🔍 Cari NISN & Lihat Hasil</button>
+                </div>
+                <div id="infoMessage" style="margin-top: 20px; font-size: 0.85rem; color: #f97316; min-height: 45px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ========== KONFIGURASI ==========
+// GANTI DENGAN URL WEB APP APPS SCRIPT ANDA!
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAX8do5hurFNFUCA71h3o6ixUz1WX9yvMd7-ML5TH7O09vl29EF-KcsxQUC1GvIlZHzA/exec';
+
+let currentStudentData = null;
+
+// ========== DATA SEKOLAH (DINAMIS DARI SPREADSHEET) ==========
+let sekolahData = {
+    namaSekolah: 'PKBM Kuntum Mekar',
+    namaKepsek: 'Ritha Gani, S.Pd, M.Pd'
+};
+
+// ================= AMBIL DATA SEKOLAH DARI APPS SCRIPT =================
+async function fetchDataSekolah() {
+    try {
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=getSekolah`);
+        const data = await response.json();
+        if (data.success) {
+            sekolahData.namaSekolah = data.namaSekolah || 'PKBM Kuntum Mekar';
+            sekolahData.namaKepsek = data.namaKepsek || 'Ritha Gani, S.Pd, M.Pd';
+        }
+    } catch (err) {
+        console.error('Gagal mengambil data sekolah:', err);
+    }
+    // Update UI setelah data didapat
+    updateUISekolah();
+}
+
+function updateUISekolah() {
+    const ns = sekolahData.namaSekolah;
+    
+    // Update welcome screen
+    const welcomeEl = document.getElementById('welcomeText');
+    if (welcomeEl) welcomeEl.innerText = ns.toUpperCase();
+    
+    // Update title halaman
+    document.getElementById('pageTitle').innerText = `${ns} - Pengumuman Kelulusan`;
+    
+    // Update subtitle
+    const subtitleEl = document.getElementById('subtitleSekolah');
+    if (subtitleEl) subtitleEl.innerText = `${ns} - Kecamatan Tapa`;
+}
+
+// ================= TEXT TO SPEECH =================
+function speakText(text) {
+    if (!('speechSynthesis' in window)) return;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'id-ID';
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+
+    const voices = speechSynthesis.getVoices();
+    const indoVoice = voices.find(v => v.lang === 'id-ID');
+    if (indoVoice) {
+        utterance.voice = indoVoice;
+    }
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+}
+
+async function searchStudentByNISN(nisn) {
+    try {
+        const response = await fetch(`${APPS_SCRIPT_URL}?nisn=${encodeURIComponent(nisn)}`);
+        const data = await response.json();
+        
+        if (data.success && data.nama) {
+            return data;
+        } else {
+            return null;
+        }
+    } catch (err) {
+        console.error('Error fetching data:', err);
+        return null;
+    }
+}
+
+function removeExistingModals() {
+    document.querySelectorAll('.modal-overlay, .modal-confirm, .loading-overlay').forEach(el => el.remove());
+}
+
+// Fungsi loading dengan efek gelap di tengah screen
+function showLoadingSpinner() {
+    removeExistingModals();
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'loading-overlay';
+    loadingDiv.innerHTML = `
+        <div class="loading-spinner-large"></div>
+        <div class="loading-text">Memeriksa data...</div>
+    `;
+    document.body.appendChild(loadingDiv);
+    return loadingDiv;
+}
+
+function hideLoadingSpinner(loadingElement) {
+    if (loadingElement && loadingElement.remove) {
+        loadingElement.remove();
+    }
+}
+
+function showGraduationCard(student) {
+    removeExistingModals();
+    
+    const tanggalFormatted = formatTanggal(student.tanggalLahir);
+    const tempatTanggal = `${student.tempatLahir || '-'}, ${tanggalFormatted}`;
+    const isLulus = (student.status || "").toLowerCase() === "lulus";
+    
+    // Gunakan data sekolah dinamis
+    const ns = sekolahData.namaSekolah;
+    const nks = sekolahData.namaKepsek;
+    
+    if (!isLulus) {
+        speakText(`Mohon maaf ${student.nama}, Anda belum dinyatakan lulus`);
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal-overlay';
+        modalDiv.innerHTML = `
+            <div class="success-card" style="border-color:#ef4444;">
+                <div class="lulus-badge" style="color:#f87171;">MAAF</div>
+                <div style="font-size:1.4rem; margin:10px 0;">Anda dinyatakan</div>
+                <div style="font-size:2rem; font-weight:bold; color:#facc15;">TIDAK LULUS</div>
+                <div class="data-center">
+                    <div class="data-nama">${escapeHtml(student.nama)}</div>
+                    <div class="data-nisn">${escapeHtml(student.nisn)}</div>
+                    <div class="data-ttl">${escapeHtml(tempatTanggal)}</div>
+                </div>
+                <div class="ketua">${escapeHtml(ns)}, Kecamatan Tapa</div>
+                <button class="btn-close-full" id="closeModalBtn">Tutup</button>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        modalDiv.querySelector('#closeModalBtn').addEventListener('click', () => {
+            modalDiv.remove();
+            window.location.reload();
+        });
+        return;
+    }
+    
+    // LULUS - dengan data sekolah dinamis
+    speakText(`Selamat kepada ${student.nama}, Anda dinyatakan lulus`);
+    const modalDiv = document.createElement('div');
+    modalDiv.className = 'modal-overlay';
+    modalDiv.innerHTML = `
+        <div class="success-card">
+            <div class="lulus-badge">SELAMAT</div>
+            <div style="font-size:1.6rem; font-weight:600; margin-bottom:4px;">Anda dinyatakan</div>
+            <div style="font-size:2.5rem; font-weight:800; color:#facc15; letter-spacing:2px;">LULUS</div>
+            <div style="margin: 8px 0 12px; font-size:0.9rem;">Paket C Tahun Ajaran 2025/2026</div>
+            
+            <div class="data-center">
+                <div class="data-nama">${escapeHtml(student.nama)}</div>
+                <div class="data-nisn">${escapeHtml(student.nisn)}</div>
+                <div class="data-ttl">${escapeHtml(tempatTanggal)}</div>
+            </div>
+            
+            <div class="ketua">
+                Ketua ${escapeHtml(ns)}<br>Kecamatan Tapa<br><b>${escapeHtml(nks)}</b>
+            </div>
+            
+            <button class="btn-close-full" id="closeModalFinalBtn">Tutup</button>
+
+            <div class="pasfoto-footer">
+                <a class="pasfoto-link" id="buatPasFotoLink">📸 Buat Pas Foto Sekarang !</a>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modalDiv);
+    
+    modalDiv.querySelector('#closeModalFinalBtn').addEventListener('click', () => {
+        modalDiv.remove();
+        window.location.reload();
+    });
+    
+    modalDiv.querySelector('#buatPasFotoLink').addEventListener('click', () => {
+        modalDiv.remove();
+        showPhotoConfirmation(student);
+    });
+}
+
+function formatTanggal(tanggalInput) {
+    if (!tanggalInput) return '-';
+    
+    if (typeof tanggalInput === 'string' && tanggalInput.includes('/')) {
+        return tanggalInput;
+    }
+    
+    try {
+        let dateObj = new Date(tanggalInput);
+        if (!isNaN(dateObj.getTime())) {
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const year = dateObj.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+    } catch(e) {
+        return tanggalInput;
+    }
+    
+    return tanggalInput;
+}
+
+function showPhotoConfirmation(student) {
+    removeExistingModals();
+    const confirmModal = document.createElement('div');
+    confirmModal.className = 'modal-confirm';
+    confirmModal.innerHTML = `
+        <div class="confirm-inner">
+            <h3 style="color:#38bdf8; margin-bottom:16px;">📸 Konfirmasi Pas Foto</h3>
+            <p style="margin-bottom:12px;">Pas Foto digunakan untuk keperluan dokumen seperti ijazah. Apakah Anda akan lanjut untuk membuat pasfoto ?</p>
+            <div class="confirm-btns">
+                <button id="confirmNo" class="btn-no">Tidak</button>
+                <button id="confirmYes" class="btn-yes">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(confirmModal);
+    
+    confirmModal.querySelector('#confirmNo').addEventListener('click', () => {
+        confirmModal.remove();
+        window.location.reload();
+    });
+    
+    confirmModal.querySelector('#confirmYes').addEventListener('click', () => {
+        confirmModal.remove();
+        const slugName = student.nama.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
+        sessionStorage.setItem("photoSessionData", JSON.stringify({ 
+            nama: student.nama, 
+            nisn: student.nisn,
+            tempatLahir: student.tempatLahir,
+            tanggalLahir: student.tanggalLahir
+        }));
+        window.open(`${window.location.origin}${window.location.pathname}?page=photo&id=${encodeURIComponent(slugName)}`, '_blank');
+    });
+}
+
+function renderPhotoStudioPage(studentData) {
+    const ns = sekolahData.namaSekolah;
+    const nks = sekolahData.namaKepsek;
+    
+    document.body.innerHTML = `
+        <div class="bg-circle circle1"></div>
+        <div class="bg-circle circle2"></div>
+        <div class="bg-circle circle3"></div>
+        <div style="max-width:500px; margin:5vh auto; position:relative; z-index:10; padding:20px;">
+            <div class="glass-card" style="padding:1.5rem;">
+                <h2 style="text-align:center; color:#38bdf8;">📷 Form Pas Foto</h2>
+                <p style="text-align:center; color:#94a3b8; margin-bottom:1rem;">${escapeHtml(ns)}</p>
+                <div class="data-center" style="margin: 1rem 0; text-align: center;">
+                    <div class="data-nama" style="font-size: 1.6rem; font-weight: 700; color: white; margin-bottom: 6px;" id="displayNama"></div>
+                    <div class="data-nisn" style="font-size: 1rem; color: #cbd5e1; letter-spacing: 1px;" id="displayNisn"></div>
+                </div>
+                <div style="display:flex; gap:12px; margin:20px 0;">
+                    <button id="cameraBtn" class="btn-primary" style="flex:1;">📸 Buka Kamera</button>
+                    <button id="uploadBtn" class="btn-primary" style="flex:1; background:#4b5563;">⬆️ Upload</button>
+                </div>
+                <div id="previewArea" style="margin:20px 0; text-align:center; min-height:140px; background:#0f172a; border-radius:24px; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:10px;">
+                    <p style="color:#9ca3af;">Preview foto akan muncul disini</p>
+                    <img id="imagePreview" style="max-width:100%; max-height:200px; border-radius:16px; display:none;">
+                </div>
+                <input type="file" id="fileInput" accept="image/*" style="display:none;">
+                <button id="kirimBtn" class="btn-close-full" style="background:#0e7c6b; margin-top: 1.5rem;">Kirim</button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('displayNama').innerText = studentData.nama;
+    document.getElementById('displayNisn').innerText = studentData.nisn;
+    
+    let currentImageBlob = null;
+    const previewImg = document.getElementById('imagePreview');
+    const previewText = document.querySelector('#previewArea p');
+    
+    document.getElementById('cameraBtn').addEventListener('click', async () => {
+        try {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.capture = 'environment';
+                input.onchange = (e) => {
+                    if (e.target.files[0]) {
+                        currentImageBlob = e.target.files[0];
+                        const url = URL.createObjectURL(currentImageBlob);
+                        previewImg.src = url;
+                        previewImg.style.display = 'block';
+                        if(previewText) previewText.style.display = 'none';
+                    }
+                };
+                input.click();
+                return;
+            }
+            
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            
+            const modalCamera = document.createElement('div');
+            modalCamera.className = 'modal-overlay';
+            modalCamera.style.zIndex = '30000';
+            modalCamera.innerHTML = `
+                <div class="success-card" style="max-width: 400px; padding: 1rem;">
+                    <video id="cameraVideo" autoplay playsinline style="width:100%; border-radius:16px; margin-bottom:1rem;"></video>
+                    <div style="display:flex; gap:12px;">
+                        <button id="captureBtn" class="btn-primary" style="flex:1;">📸 Ambil Foto</button>
+                        <button id="closeCameraBtn" class="btn-close-full" style="margin-top:0;">Tutup</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modalCamera);
+            
+            const videoElem = modalCamera.querySelector('#cameraVideo');
+            videoElem.srcObject = stream;
+            
+            modalCamera.querySelector('#captureBtn').addEventListener('click', () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = videoElem.videoWidth;
+                canvas.height = videoElem.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(videoElem, 0, 0, canvas.width, canvas.height);
+                
+                canvas.toBlob((blob) => {
+                    currentImageBlob = blob;
+                    const url = URL.createObjectURL(blob);
+                    previewImg.src = url;
+                    previewImg.style.display = 'block';
+                    if(previewText) previewText.style.display = 'none';
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                    modalCamera.remove();
+                }, 'image/jpeg', 0.9);
+            });
+            
+            modalCamera.querySelector('#closeCameraBtn').addEventListener('click', () => {
+                stream.getTracks().forEach(track => track.stop());
+                modalCamera.remove();
+            });
+            
+        } catch (err) {
+            console.error('Gagal akses kamera:', err);
+            alert('Tidak dapat mengakses kamera. Pastikan izin kamera diberikan.\n\nFallback: Menggunakan upload file.');
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                if (e.target.files[0]) {
+                    currentImageBlob = e.target.files[0];
+                    const url = URL.createObjectURL(currentImageBlob);
+                    previewImg.src = url;
+                    previewImg.style.display = 'block';
+                    if(previewText) previewText.style.display = 'none';
+                }
+            };
+            input.click();
+        }
+    });
+    
+    document.getElementById('uploadBtn').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+    
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+            currentImageBlob = e.target.files[0];
+            const url = URL.createObjectURL(currentImageBlob);
+            previewImg.src = url;
+            previewImg.style.display = 'block';
+            if(previewText) previewText.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('kirimBtn').addEventListener('click', async () => {
+        if (!currentImageBlob) {
+            alert("Silakan ambil atau unggah foto terlebih dahulu.");
+            return;
+        }
+        
+        const loadingUpload = document.createElement('div');
+        loadingUpload.className = 'loading-overlay';
+        loadingUpload.innerHTML = `
+            <div class="loading-spinner-large"></div>
+            <div class="loading-text">Mengupload foto ke server...</div>
+        `;
+        document.body.appendChild(loadingUpload);
+        
+        try {
+            const reader = new FileReader();
+            const base64Promise = new Promise((resolve) => {
+                reader.onloadend = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.readAsDataURL(currentImageBlob);
+            });
+            
+            const base64Data = await base64Promise;
+            const nama = document.getElementById('displayNama').innerText;
+            const nisn = document.getElementById('displayNisn').innerText;
+            const fileName = `${nisn}_${nama.replace(/\s/g, '_')}_${Date.now()}.jpg`;
+            
+            const formData = new FormData();
+            formData.append('file', base64Data);
+            formData.append('fileName', fileName);
+            formData.append('nisn', nisn);
+            formData.append('nama', nama);
+            
+            const uploadResponse = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const uploadResult = await uploadResponse.json();
+            loadingUpload.remove();
+            
+            if (uploadResult.success) {
+                const successModal = document.createElement('div');
+                successModal.className = 'modal-confirm';
+                successModal.innerHTML = `
+                    <div class="confirm-inner">
+                        <h3 style="color:#2dd4bf; margin-bottom:16px;">✅ Upload Berhasil!</h3>
+                        <p style="margin-bottom:12px;">Foto Anda telah tersimpan di Google Drive.</p>
+                        <button id="okContinueBtn" class="btn-yes" style="width:100%; margin-top:10px;">Lanjutkan ke WhatsApp</button>
+                    </div>
+                `;
+                document.body.appendChild(successModal);
+                
+                successModal.querySelector('#okContinueBtn').addEventListener('click', () => {
+                    successModal.remove();
+                    
+                    // Menggunakan data sekolah dinamis untuk WhatsApp
+                    const textWA = `Assalamualaikum. saya ${nama} (NISN: ${nisn}), peserta didik ${ns} mau melakukan pembayaran pas foto. Foto sudah diupload.`;
+                    const waNumber = "6289609745090";
+                    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(textWA)}`, '_blank');
+                    setTimeout(() => {
+                        window.location.href = window.location.pathname;
+                    }, 2000);
+                });
+            } else {
+                throw new Error(uploadResult.error || 'Upload gagal');
+            }
+            
+        } catch (error) {
+            loadingUpload.remove();
+            alert('Gagal mengupload foto: ' + error.message + '\n\nSilakan coba lagi.');
+        }
+    });
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+function handlePhotoPageRouting() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('page') === 'photo') {
+        const sessionData = sessionStorage.getItem("photoSessionData");
+        if (sessionData) {
+            const student = JSON.parse(sessionData);
+            sessionStorage.removeItem("photoSessionData");
+            renderPhotoStudioPage(student);
+        } else {
+            renderPhotoStudioPage({ nama: "Peserta", nisn: "----" });
+        }
+        return true;
+    }
+    return false;
+}
+
+// ================= INIT =================
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Ambil data sekolah DULU sebelum menampilkan apapun
+    await fetchDataSekolah();
+
+    setTimeout(() => {
+        speakText(`Selamat datang peserta didik ${sekolahData.namaSekolah}`);
+    }, 800);
+
+    if (handlePhotoPageRouting()) return;
+    
+    const welcome = document.getElementById('welcomeScreen');
+    const main = document.getElementById('mainContent');
+    
+    setTimeout(() => {
+        welcome.classList.add('fade-out');
+        setTimeout(() => {
+            welcome.style.display = 'none';
+            main.classList.remove('hidden');
+            setTimeout(() => main.classList.add('show'), 80);
+        }, 800);
+    }, 2500);
+    
+    const searchBtn = document.getElementById('searchBtn');
+    const nisnInput = document.getElementById('nisnInput');
+    const infoMsg = document.getElementById('infoMessage');
+    
+    async function performSearch() {
+        const nisnVal = nisnInput.value.trim();
+        if (!nisnVal) {
+            infoMsg.innerText = "⚠️ Masukkan NISN terlebih dahulu.";
+            return;
+        }
+        
+        const loadingOverlay = showLoadingSpinner();
+        const student = await searchStudentByNISN(nisnVal);
+        hideLoadingSpinner(loadingOverlay);
+        
+        if (!student) {
+            infoMsg.innerHTML = `❌ NISN tidak ditemukan. Pastikan terdaftar di ${sekolahData.namaSekolah}.`;
+            return;
+        }
+        infoMsg.innerHTML = "";
+        currentStudentData = student;
+        
+        const animOverlay = document.createElement('div');
+        animOverlay.style.cssText = 'position:fixed; inset:0; background:radial-gradient(circle, #020617, black); z-index:30000; display:flex; align-items:center; justify-content:center;';
+        animOverlay.innerHTML = '<h1 style="font-size:48px; color:#38bdf8; animation:fadeInScale 0.8s;">✨</h1>';
+        document.body.appendChild(animOverlay);
+        setTimeout(() => {
+            animOverlay.remove();
+            showGraduationCard(student);
+        }, 850);
+    }
+    
+    searchBtn.addEventListener('click', performSearch);
+    nisnInput.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') performSearch();
+    });
+});
+</script>
+</body>
+</html>
