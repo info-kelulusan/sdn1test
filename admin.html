@@ -12,10 +12,23 @@
       box-sizing: border-box;
       font-family: 'Segoe UI', system-ui, sans-serif;
     }
+
+    /* CSS Variables untuk tema */
+    :root {
+        --gradient-start: #020617;
+        --gradient-mid: #0f172a;
+        --gradient-end: #020617;
+        --text-primary: #ffffff;
+        --card-bg: rgba(15, 25, 45, 0.65);
+        --btn-gradient-start: #0ea5e9;
+        --btn-gradient-end: #3b82f6;
+        --border-color: rgba(56, 189, 248, 0.3);
+      }
+
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
-      color: white;
+      background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
+      color: var(--text-primary);
       padding: 20px;
       display: flex;
       justify-content: center;
@@ -38,7 +51,8 @@
     }
     .glass-card {
       backdrop-filter: blur(18px);
-      background: rgba(15, 25, 45, 0.65);
+      background: var(--card-bg);
+      border-color: var(--border-color);
       border-radius: 2rem;
       border: 1px solid rgba(56, 189, 248, 0.3);
       box-shadow: 0 25px 45px rgba(0,0,0,0.3);
@@ -94,7 +108,7 @@
       justify-content: center;
     }
     .btn-primary {
-      background: linear-gradient(100deg, #0ea5e9, #3b82f6);
+      background: linear-gradient(100deg, var(--btn-gradient-start), var(--btn-gradient-end));
       color: white;
     }
     .btn-primary:hover {
@@ -229,6 +243,40 @@
     .loading-overlay.hidden {
         display: none !important;
     }
+    .spinner-small {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(56,189,248,0.3);
+        border-top: 2px solid #38bdf8;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: inline-block;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    .progress-container {
+      width: 80%;
+      height: 10px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #38bdf8, #3b82f6);
+      transition: width 0.2s ease;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      15% { opacity: 1; transform: translateY(0); }
+      85% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
   </style>
 </head>
 <body>
@@ -252,14 +300,46 @@
     <h2>🏫 Data Sekolah</h2>
     <div class="form-group">
       <label>Nama Sekolah</label>
-      <input type="text" id="namaSekolah" class="input-field" placeholder="Contoh: PKBM Kuntum Mekar">
+      <input type="text" id="namaSekolah" class="input-field" placeholder="Contoh: SDN Tester">
     </div>
     <div class="form-group">
       <label>Nama Kepala Sekolah</label>
-      <input type="text" id="namaKepsek" class="input-field" placeholder="Contoh: Ritha Gani, S.Pd, M.Pd">
+      <input type="text" id="namaKepsek" class="input-field" placeholder="Contoh: Tester Tes, S.Kom">
     </div>
     <button id="btnSimpanSekolah" class="btn btn-primary">💾 Simpan Data Sekolah</button>
     <p id="statusSekolah" style="margin-top: 0.8rem; font-size: 0.8rem; color: #34d399; min-height: 20px;"></p>
+  </div>
+
+  <!-- FORM PENGATURAN TEMA -->
+  <div class="glass-card">
+    <h2>🎨 Pengaturan Tema</h2>
+    
+    <div class="form-group">
+      <label>Pilih Tema Background</label>
+      <select id="temaBackground" class="input-field">
+        <option value="default">🌌 Default (Biru Gelap)</option>
+        <option value="pink">🌸 Pink Gradasi</option>
+        <option value="tosca">💙 Tosca Gradasi</option>
+        <option value="ungu">🟣 Ungu Gradasi</option>
+        <option value="hijau">🍃 Hijau Gradasi</option>
+        <option value="putih">⚪ Putih-Abuabu Gradasi</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>Warna Teks Utama</label>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="color" id="warnaTeks" class="input-field" style="width: 60px; padding: 5px; height: 45px;">
+        <input type="text" id="warnaTeksHex" class="input-field" placeholder="#FFFFFF" style="flex: 1;">
+      </div>
+    </div>
+    
+    <div class="flex-row">
+      <button id="btnSimpanTema" class="btn btn-primary">💾 Simpan Tema</button>
+      <button id="btnResetTema" class="btn btn-outline">🔄 Reset ke Default</button>
+    </div>
+    
+    <p id="statusTema" style="margin-top: 0.8rem; font-size: 0.8rem; color: #34d399; min-height: 20px;"></p>
   </div>
 
   <!-- FORM INPUT MANUAL -->
@@ -321,7 +401,6 @@
           </tr>
         </thead>
         <tbody id="tabelBody">
-          <tr><td colspan="6" style="text-align:center; color:#64748b;">Belum ada data</td></tr>
         </tbody>
       </table>
     </div>
@@ -340,11 +419,221 @@
 <!-- LOADING -->
 <div id="loadingOverlay" class="loading-overlay hidden">
   <div class="spinner"></div>
-  <p style="color:#38bdf8; font-weight:500;">Mengirim data...</p>
+  <p id="loadingText" style="color:#38bdf8; font-weight:500;">
+    Memproses file...
+  </p>
+  <div id="progressContainer" class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+
+
+document.addEventListener('copy', function(e) {
+    alert('Copy tidak diizinkan');
+    e.preventDefault();
+});
+
+
+(function() {
+        // Method 1: Deteksi resize window (DevTools dibuka)
+        function detectDevTools() {
+            const threshold = 160;
+            const widthDiff = window.outerWidth - window.innerWidth > threshold;
+            const heightDiff = window.outerHeight - window.innerHeight > threshold;
+            
+            if (widthDiff || heightDiff) {
+                showConsoleWarning();
+            }
+        }
+        
+        
+        // Method 3: Deteksi Firebug
+        function detectFirebug() {
+            if (window.console && (console.firebug || console.exception)) {
+                showConsoleWarning();
+            }
+        }
+        
+        // Method 4: Deteksi via console.log override
+        function showConsoleWarning() {
+            const warningStyles = [
+                'font-size: 20px',
+                'font-weight: bold',
+                'color: #ef4444',
+                'background: #1e1e1e',
+                'padding: 20px',
+                'border: 2px solid #ef4444',
+                'border-radius: 8px',
+                'text-shadow: 0 0 5px rgba(239,68,68,0.5)'
+            ].join(';');
+            
+            console.clear();
+            console.log('%c⚠️ PERINGATAN KEAMANAN! ⚠️', warningStyles);
+            console.log('%c', 'font-size: 14px; color: #fbbf24;');
+            console.log('%c🚫 Developer Tools terdeteksi!', 'font-size: 16px; color: #ef4444; font-weight: bold;');
+            console.log('%c', 'font-size: 14px; color: #94a3b8;');
+            console.log('%c', 'font-size: 14px; color: #94a3b8;');
+            console.log('%c🔒 Aplikasi ini dilindungi oleh GoAbs Security System', 'font-size: 12px; color: #667eea;');
+            console.log('%c📧 Laporkan aktivitas mencurigakan ke: admin@goabs.id', 'font-size: 12px; color: #667eea;');
+            console.log('%c', 'font-size: 14px; color: #94a3b8;');
+        }
+        
+        // Method 5: Override console methods (opsional - lebih agresif)
+        function protectConsole() {
+            const originalConsole = {
+                log: console.log,
+                warn: console.warn,
+                error: console.error,
+                info: console.info,
+                debug: console.debug,
+                table: console.table,
+                trace: console.trace
+            };
+        }
+        
+        // Method 6: Deteksi object console yang tidak standar
+        function detectConsoleOpen() {
+            const element = new Image();
+            Object.defineProperty(element, 'id', {
+                get: function() {
+                    showConsoleWarning();
+                    return '';
+                }
+            });
+            console.log('%c', element);
+        }
+        
+        // Method 7: Deteksi via window resize berulang
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                detectDevTools();
+            }, 100);
+        });
+        
+        // Method 8: Deteksi via mousemove (DevTools biasanya di kanan/bawah)
+        window.addEventListener('mousemove', function(e) {
+            if (e.clientX > window.innerWidth - 100 || e.clientY > window.innerHeight - 100) {
+                // Mouse di area yang mencurigakan
+            }
+        });
+        
+        // Method 9: Deteksi shortcut keyboard (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U)
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                showConsoleWarning();
+                return false;
+            }
+            
+            // Ctrl+Shift+I (Windows/Linux) atau Cmd+Option+I (Mac)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) {
+                e.preventDefault();
+                showConsoleWarning();
+                return false;
+            }
+            
+            // Ctrl+U (View Source)
+            if ((e.ctrlKey || e.metaKey) && e.keyCode === 85) {
+                e.preventDefault();
+                showConsoleWarning();
+                return false;
+            }
+            
+            // Ctrl+Shift+C (Inspect Element)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 67) {
+                e.preventDefault();
+                showConsoleWarning();
+                return false;
+            }
+        });
+        
+        // Blokir klik kanan
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Jalankan deteksi secara periodik
+        setInterval(function() {
+            detectDevTools();
+        }, 1000);
+        
+        // Jalankan saat halaman load
+        window.addEventListener('load', function() {
+            detectDevTools();
+            protectConsole();
+            
+            // Tampilkan pesan normal di console (untuk developer yang sah)
+            console.log('%c✅ GoAbs - Sistem Absensi Digital', 'font-size: 16px; color: #667eea; font-weight: bold;');
+            console.log('%c🚀 Aplikasi berjalan normal', 'font-size: 14px; color: #22c55e;');
+        });
+        
+        // Cegah select text
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        });
+        
+        // Deteksi jika user mencoba inspect element via context menu
+        window.addEventListener('beforeunload', function() {
+            // Cleanup
+        });
+        
+    })();
+
+    // ====== HARD BLOCK DEVTOOLS ======
+    function blockUserAccess() {
+        if (document.getElementById('blocked')) return;
+
+        const div = document.createElement('div');
+        div.id = 'blocked';
+        div.style.cssText = `
+            position:fixed;
+            inset:0;
+            background:#020617;
+            color:#ef4444;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:999999;
+        `;
+        div.innerHTML = '⚠️ Developer Tools terdeteksi';
+
+        document.body.appendChild(div);
+    }
+
+// Deteksi DevTools lebih sensitif
+function isDevToolsOpen() {
+    const threshold = 150;
+    return (
+        window.outerWidth - window.innerWidth > threshold ||
+        window.outerHeight - window.innerHeight > threshold
+    );
+}
+
+// Loop monitoring
+setInterval(() => {
+    if (isDevToolsOpen()) {
+        blockUserAccess();
+    }
+}, 800);
+
+
+// Proteksi tambahan: blur jika tab tidak aktif (indikasi inspect)
+document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+        document.body.style.filter = "blur(8px)";
+    } else {
+        document.body.style.filter = "none";
+    }
+});
+
+
   // ============ KONFIGURASI ============
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWAsabHqWTtxym8KC89PlLIzba0epq6JRB3TrxKGgH2lb62khAs_DsHYFAlxZ5kXMA/exec';
 
@@ -352,11 +641,44 @@
   let dataPeserta = [];
   let sudahUnduhFormat = false;
 
+  // ============ CACHE SYSTEM ============
+  const CACHE_KEY = 'cachedDataSiswa';
+  const CACHE_TIMESTAMP_KEY = 'cacheTimestamp';
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 menit
+
+  function loadFromCache() {
+    const cached = localStorage.getItem(CACHE_KEY);
+    const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+    
+    if (cached && timestamp && (Date.now() - timestamp) < CACHE_DURATION) {
+      try {
+        const cachedData = JSON.parse(cached);
+        if (cachedData && cachedData.length > 0) {
+          dataPeserta = cachedData;
+          renderTabel();
+          return true;
+        }
+      } catch(e) { console.error('Cache error:', e); }
+    }
+    return false;
+  }
+
+  function saveToCache() {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(dataPeserta));
+    localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now());
+  }
+
+  function clearCache() {
+    localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+  }
+
   // ============ UTILITY FUNCTIONS ============
   function tampilkanLoading() {
       // Hapus dulu semua loading overlay yang mungkin tersisa
-      document.querySelectorAll('.loading-overlay').forEach(el => el.remove());
-      
+      document.querySelectorAll('.loading-overlay').forEach(el => {
+        el.classList.add('hidden');
+      });      
       // Baru tampilkan yang asli
       const loadingEl = document.getElementById('loadingOverlay');
       if (loadingEl) {
@@ -409,23 +731,78 @@
     } catch (err) {
       console.error('Gagal load data sekolah:', err);
       // Fallback: tetap isi dengan default, jangan stuck
-      document.getElementById('namaSekolah').value = 'testes';
-      document.getElementById('namaKepsek').value = 'testsdsdf';
+      document.getElementById('namaSekolah').value = 'Nama Sekolah';
+      document.getElementById('namaKepsek').value = 'Nama Kepala Sekolah';
     }
   }
 
   // ============ LOAD DATA SISWA DARI SPREADSHEET ============
-  async function loadDataSiswa() {
-      try {
-          const response = await fetch(`${APPS_SCRIPT_URL}?action=getAllSiswa`);
-          const data = await response.json();
-          if (data.success && data.siswa) {
-              dataPeserta = data.siswa;
-              renderTabel();
-          }
-      } catch (err) {
-          console.error('Gagal load data siswa:', err);
+  async function loadDataSiswa(forceRefresh = false) {
+    // Cek cache dulu
+    if (!forceRefresh && loadFromCache()) {
+      console.log('📦 Load from cache');
+      // Realtime sync di background
+      syncDataBackground();
+      return;
+    }
+    
+    // Tampilkan loading hanya jika cache kosong
+    if (!forceRefresh && dataPeserta.length === 0) {
+      document.getElementById('tabelBody').innerHTML = `
+        <tr><td colspan="6" style="text-align:center; padding: 2rem;">
+          <div class="spinner-small"></div> 
+          <span style="color:#94a3b8;">Memuat data...</span>
+        </td></tr>
+      `;
+    }
+    
+    try {
+      const response = await fetch(`${APPS_SCRIPT_URL}?action=getAllSiswa&_=${Date.now()}`);
+      const data = await response.json();
+      
+      if (data.success && data.siswa) {
+        dataPeserta = data.siswa;
+        renderTabel();
+        saveToCache(); // Simpan ke cache
+      } else if (dataPeserta.length === 0) {
+        renderTabel(); // Tampilkan "Tidak ada data"
       }
+    } catch (err) {
+      console.error('Gagal load data siswa:', err);
+      if (dataPeserta.length === 0) {
+        renderTabel();
+      }
+    }
+  }
+
+  // Background sync (realtime tanpa mengganggu UI)
+  async function syncDataBackground() {
+    try {
+      const response = await fetch(`${APPS_SCRIPT_URL}?action=getAllSiswa&_=${Date.now()}`);
+      const data = await response.json();
+      
+      if (data.success && data.siswa) {
+        // Cek apakah ada perubahan
+        const currentDataHash = JSON.stringify(dataPeserta);
+        const newDataHash = JSON.stringify(data.siswa);
+        
+        if (currentDataHash !== newDataHash) {
+          console.log('🔄 Real-time sync: data changed');
+          dataPeserta = data.siswa;
+          renderTabel();
+          saveToCache();
+          
+          // Notifikasi ringan
+          const toast = document.createElement('div');
+          toast.textContent = '📡 Data telah diperbarui';
+          toast.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#38bdf8;color:#fff;padding:10px 20px;border-radius:10px;z-index:10000;animation:fadeInOut 2s';
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 2000);
+        }
+      }
+    } catch (err) {
+      console.log('Background sync error:', err);
+    }
   }
 
   // ============ SIMPAN DATA SEKOLAH ============
@@ -507,10 +884,13 @@
     reader.onload = async (event) => {
       try {
         const data = new Uint8Array(event.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
+        const workbook = XLSX.read(data, { type: 'array', cellDates: true });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        const jsonData = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+          raw: false
+        });
         
         if (jsonData.length < 2) {
           tampilkanModal("❌ Error", "File kosong atau tidak memiliki data.");
@@ -518,40 +898,74 @@
         }
         
         tampilkanLoading();
+        
+        const el = document.getElementById('progressContainer');
+        if (el) el.classList.remove('hidden');
+        updateLoadingText("Memulai proses upload...");
+
         let countSuccess = 0;
         let countFailed = 0;
         const newData = [];
-        
-        for (let i = 1; i < jsonData.length; i++) {
-          const row = jsonData[i];
-          if (row && row.length >= 4 && row[0] && row[1]) {
-            const peserta = {
-              nama: String(row[0]).trim(),
-              nisn: String(row[1]).trim(),
-              tempatLahir: String(row[2] || '').trim(),
-              tanggalLahir: String(row[3] || '').trim(),
-              status: String(row[4] || '').trim()
-            };
-            
-            // Kirim langsung ke Apps Script
-            const success = await kirimDataSiswa(peserta);
-            if (success) {
-              newData.push(peserta);
+
+        const batchSize = 10;
+
+        for (let i = 1; i < jsonData.length; i += batchSize) {
+
+          const batch = jsonData.slice(i, i + batchSize);
+
+          updateLoadingText(`Mengirim batch ${Math.ceil(i / batchSize)}...`);
+
+          // kirim paralel (INI YANG BIKIN 10x LEBIH CEPAT)
+          const promises = batch.map(async (row, j) => {
+
+            const rowIndex = i + j;
+            updateProgress(rowIndex, jsonData.length - 1);
+
+            if (row && row.length >= 4 && row[0] && row[1]) {
+
+              const peserta = {
+                nama: String(row[0]).trim(),
+                nisn: String(row[1]).trim(),
+                tempatLahir: String(row[2] || '').trim(),
+                tanggalLahir: normalizeTanggal(row[3]),
+                status: String(row[4] || '').trim()
+              };
+
+              const success = await kirimDataSiswa(peserta);
+
+              return { success, peserta };
+            }
+
+            return { success: false };
+          });
+
+          const results = await Promise.all(promises);
+
+          results.forEach(r => {
+            if (r.success) {
+              newData.push(r.peserta);
               countSuccess++;
             } else {
               countFailed++;
             }
-          }
+          });
+
+          // anti freeze UI
+          await new Promise(r => setTimeout(r, 50));
         }
         
         dataPeserta.push(...newData);
         renderTabel();
+
         sembunyikanLoading();
-        
+        document.getElementById('progressContainer').classList.add('hidden');
+
         let msg = `${countSuccess} data berhasil dikirim ke Spreadsheet.`;
+
         if (countFailed > 0) {
           msg += `\n${countFailed} data gagal (mungkin NISN duplikat).`;
         }
+
         tampilkanStatus('statusUpload', msg, countFailed > 0);
         
       } catch (err) {
@@ -624,31 +1038,137 @@
     }
   }
 
-  // ============ RENDER TABEL ============
+  // HAPUS DATA DARI SPREADSHEET
+  async function hapusDataDariSpreadsheet(nisn) {
+    try {
+      const params = new URLSearchParams({
+        action: 'deleteSiswa',
+        nisn: nisn
+      });
+
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: params
+      });
+      const result = await response.json();
+      return result.success === true;
+    } catch (err) {
+      console.error('Error hapus data:', err);
+      return false;
+    }
+  }
+
+  const BATCH_SIZE = 10;
+
+  async function kirimBatchSiswa(listPeserta, onProgress) {
+    let success = 0;
+    let failed = 0;
+
+    for (let i = 0; i < listPeserta.length; i += BATCH_SIZE) {
+      const batch = listPeserta.slice(i, i + BATCH_SIZE);
+
+      // kirim paralel dalam 1 batch
+      const promises = batch.map(p => kirimDataSiswa(p));
+
+      const results = await Promise.all(promises);
+
+      results.forEach(r => {
+        if (r) success++;
+        else failed++;
+      });
+
+      // progress update
+      if (onProgress) {
+        onProgress(Math.min(i + BATCH_SIZE, listPeserta.length), listPeserta.length);
+      }
+
+      // kasih napas ke UI (ANTI FREEZE)
+      await new Promise(r => setTimeout(r, 50));
+    }
+
+    return { success, failed };
+  }
+
+  function formatTanggal(dateString) {
+    if (!dateString) return '-';
+
+    const date = new Date(dateString);
+    if (isNaN(date)) return dateString; // kalau bukan format date, biarkan
+
+    const hari = String(date.getDate()).padStart(2, '0');
+    const bulan = String(date.getMonth() + 1).padStart(2, '0');
+    const tahun = date.getFullYear();
+
+    return `${hari}/${bulan}/${tahun}`;
+  }
+
+  // ============ PAGINATION ============
+  let currentPage = 1;
+  const rowsPerPage = 10;
+
   function renderTabel() {
     const tbody = document.getElementById('tabelBody');
+    
     if (dataPeserta.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b;">Belum ada data</td></tr>';
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2rem;">📭 Tidak ada data ditemukan</td></tr>`;
+      document.getElementById('paginationControls')?.remove();
       return;
     }
     
-    tbody.innerHTML = dataPeserta.map((p, index) => `
-      <tr>
-        <td>${escapeHtml(p.nama)}</td>
-        <td>${escapeHtml(p.nisn)}</td>
-        <td>${escapeHtml(p.tempatLahir) || '-'}</td>
-        <td>${escapeHtml(p.tanggalLahir) || '-'}</td>
-        <td>
-          <span class="status-badge ${p.status === 'Lulus' ? 'status-lulus' : 'status-tidak'}">
+    // Hitung pagination
+    const totalPages = Math.ceil(dataPeserta.length / rowsPerPage);
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    const pageData = dataPeserta.slice(startIndex, endIndex);
+    
+    // Render data
+    tbody.innerHTML = pageData.map((p, idx) => {
+      const originalIndex = startIndex + idx;
+      return `
+        <tr>
+          <td>${escapeHtml(p.nama)}</td>
+          <td>${escapeHtml(p.nisn)}</td>
+          <td>${escapeHtml(p.tempatLahir) || '-'}</td>
+          <td>${formatTanggal(p.tanggalLahir)}</td>
+          <td><span class="status-badge ${p.status === 'Lulus' ? 'status-lulus' : 'status-tidak'}">
             ${p.status === 'Lulus' ? '✅ Lulus' : '❌ Tidak Lulus'}
-          </span>
-        </td>
-        <td>
-          <button class="icon-btn" onclick="copyData(${index})" title="Copy teks pengumuman">📋</button>
-          <button class="icon-btn" onclick="deleteData(${index})" title="Hapus dari tampilan">🗑️</button>
-        </td>
-      </tr>
-    `).join('');
+          </span></td>
+          <td>
+            <button class="icon-btn" onclick="copyData(${originalIndex})" title="Copy teks">📋</button>
+            <button class="icon-btn" onclick="deleteData(${originalIndex})" title="Hapus">🗑️</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+    
+    // Render pagination controls
+    let paginationDiv = document.getElementById('paginationControls');
+    if (!paginationDiv) {
+      paginationDiv = document.createElement('div');
+      paginationDiv.id = 'paginationControls';
+      paginationDiv.style.cssText = 'display:flex;justify-content:center;gap:10px;margin-top:20px;flex-wrap:wrap';
+      const parent = document.querySelector('.glass-card:last-child');
+      if (parent) {
+        parent.appendChild(paginationDiv);
+      }    
+    }
+    
+    paginationDiv.innerHTML = `
+      <button class="btn btn-outline" onclick="changePage(1)" ${currentPage === 1 ? 'disabled' : ''}>⏮️ First</button>
+      <button class="btn btn-outline" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀ Prev</button>
+      <span style="padding:8px 16px;background:rgba(255,255,255,0.1);border-radius:20px">
+        Page ${currentPage} of ${totalPages} (${dataPeserta.length} total)
+      </span>
+      <button class="btn btn-outline" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next ▶</button>
+      <button class="btn btn-outline" onclick="changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Last ⏩</button>
+    `;
+  }
+
+  function changePage(page) {
+    const totalPages = Math.ceil(dataPeserta.length / rowsPerPage);
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderTabel();
   }
 
   // ============ COPY DATA ============
@@ -699,12 +1219,44 @@ Wassalamu'alaikum warahmatullahi wabarakatuh.`;
   }
 
   // ============ DELETE DATA ============
-  function deleteData(index) {
+  async function deleteData(index) {
     const peserta = dataPeserta[index];
-    if (confirm(`Hapus data ${peserta.nama} (NISN: ${peserta.nisn}) dari tampilan?\n\nCatatan: Data tetap ada di Spreadsheet.`)) {
-      dataPeserta.splice(index, 1);
+    
+    // Confirmation dengan loading state
+    const confirmed = confirm(`Hapus permanen data ${peserta.nama} (NISN: ${peserta.nisn})?\n\nData akan dihapus dari Spreadsheet!`);
+    
+    if (!confirmed) return;
+    
+    // OPTIMISTIC UI: hapus dari tampilan dulu
+    const deletedPeserta = dataPeserta[index];
+    dataPeserta.splice(index, 1);
+    renderTabel();
+    
+    // Tampilkan loading kecil di tombol
+    tampilkanStatus('statusSekolah', `🔄 Menghapus ${deletedPeserta.nama}...`, false);
+    
+    // Kirim request ke server
+    const success = await hapusDataDariSpreadsheet(deletedPeserta.nisn);
+    
+    if (success) {
+      // Update cache
+      localStorage.setItem('cachedDataSiswa', JSON.stringify(dataPeserta));
+      localStorage.setItem('cacheTimestamp', Date.now());
+      tampilkanStatus('statusSekolah', `✅ ${deletedPeserta.nama} berhasil dihapus`, false);
+    } else {
+      // ROLLBACK jika gagal
+      dataPeserta.splice(index, 0, deletedPeserta);
       renderTabel();
+      tampilkanStatus('statusSekolah', `❌ Gagal menghapus ${deletedPeserta.nama}`, true);
     }
+    
+    // Bersihkan status setelah 3 detik
+    setTimeout(() => {
+      const statusEl = document.getElementById('statusSekolah');
+      if (statusEl.innerText.includes(deletedPeserta.nama)) {
+        statusEl.innerText = '';
+      }
+    }, 3000);
   }
 
   function escapeHtml(str) {
@@ -720,6 +1272,9 @@ Wassalamu'alaikum warahmatullahi wabarakatuh.`;
       await loadDataSekolah();
       // Load data siswa dari spreadsheet
       await loadDataSiswa();
+      // Load tema saat inisialisasi
+      // Tambahkan ini di dalam DOMContentLoaded
+      await loadTemaFromSheet();
       
       // Set default jika masih kosong
       if (!document.getElementById('namaSekolah').value) {
@@ -732,6 +1287,246 @@ Wassalamu'alaikum warahmatullahi wabarakatuh.`;
       // Pastikan loading disembunyikan saat init
       sembunyikanLoading();
   });
+
+  function updateLoadingText(text) {
+    const el = document.getElementById('loadingText');
+    if (el) el.innerText = text;
+  }
+
+  function updateProgress(current, total) {
+    const percent = Math.round((current / total) * 100);
+    const bar = document.getElementById('progressBar');
+
+    if (bar) {
+      bar.style.width = percent + '%';
+    }
+
+    updateLoadingText(`Mengupload ${current}/${total} data...`);
+  }
+
+  function normalizeTanggal(value) {
+    if (!value) return '';
+
+    // kalau sudah Date object
+    if (value instanceof Date) {
+      const d = String(value.getDate()).padStart(2, '0');
+      const m = String(value.getMonth() + 1).padStart(2, '0');
+      const y = value.getFullYear();
+      return `${d}/${m}/${y}`;
+    }
+
+    // kalau string Excel / CSV
+    if (typeof value === 'string') {
+      // kalau sudah format DD/MM/YYYY biarkan
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) return value;
+
+      // coba parse fallback
+      const date = new Date(value);
+      if (!isNaN(date)) {
+        const d = String(date.getDate()).padStart(2, '0');
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const y = date.getFullYear();
+        return `${d}/${m}/${y}`;
+      }
+    }
+
+    return value;
+  }
+
+  // ============ FUNGSI TEMA ============
+const temaGradasi = {
+  default: {
+    gradientStart: '#020617',
+    gradientMid: '#0f172a',
+    gradientEnd: '#020617',
+    btnStart: '#0ea5e9',
+    btnEnd: '#3b82f6',
+    borderColor: 'rgba(56, 189, 248, 0.3)',
+    cardBg: 'rgba(15, 25, 45, 0.65)'
+  },
+  pink: {
+    gradientStart: '#4c0519',
+    gradientMid: '#9d174d',
+    gradientEnd: '#4c0519',
+    btnStart: '#ec4899',
+    btnEnd: '#db2777',
+    borderColor: 'rgba(236, 72, 153, 0.3)',
+    cardBg: 'rgba(30, 10, 30, 0.65)'
+  },
+  tosca: {
+    gradientStart: '#042f2e',
+    gradientMid: '#0d9488',
+    gradientEnd: '#042f2e',
+    btnStart: '#14b8a6',
+    btnEnd: '#0d9488',
+    borderColor: 'rgba(20, 184, 166, 0.3)',
+    cardBg: 'rgba(10, 40, 40, 0.65)'
+  },
+  ungu: {
+    gradientStart: '#2e1065',
+    gradientMid: '#7c3aed',
+    gradientEnd: '#2e1065',
+    btnStart: '#8b5cf6',
+    btnEnd: '#6d28d9',
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+    cardBg: 'rgba(30, 15, 50, 0.65)'
+  },
+  hijau: {
+    gradientStart: '#052e16',
+    gradientMid: '#16a34a',
+    gradientEnd: '#052e16',
+    btnStart: '#22c55e',
+    btnEnd: '#15803d',
+    borderColor: 'rgba(34, 197, 94, 0.3)',
+    cardBg: 'rgba(15, 40, 20, 0.65)'
+  },
+  putih: {
+    gradientStart: '#e2e8f0',
+    gradientMid: '#cbd5e1',
+    gradientEnd: '#e2e8f0',
+    btnStart: '#64748b',
+    btnEnd: '#475569',
+    borderColor: 'rgba(100, 116, 139, 0.4)',
+    cardBg: 'rgba(255, 255, 255, 0.2)',
+    textColor: '#1e293b'
+  }
+};
+
+function applyTheme(backgroundColor, textColor) {
+  const root = document.documentElement;
+  const tema = temaGradasi[backgroundColor] || temaGradasi.default;
+  
+  root.style.setProperty('--gradient-start', tema.gradientStart);
+  root.style.setProperty('--gradient-mid', tema.gradientMid);
+  root.style.setProperty('--gradient-end', tema.gradientEnd);
+  root.style.setProperty('--btn-gradient-start', tema.btnStart);
+  root.style.setProperty('--btn-gradient-end', tema.btnEnd);
+  root.style.setProperty('--border-color', tema.borderColor);
+  root.style.setProperty('--card-bg', tema.cardBg);
+  
+  // Gunakan warna teks dari parameter jika ada, atau tema default
+  if (textColor) {
+    root.style.setProperty('--text-primary', textColor);
+  } else if (backgroundColor === 'putih') {
+    root.style.setProperty('--text-primary', '#1e293b');
+  } else {
+    root.style.setProperty('--text-primary', '#ffffff');
+  }
+}
+
+async function loadTemaFromSheet() {
+  try {
+    const response = await fetch(`${APPS_SCRIPT_URL}?action=getTema`);
+    const data = await response.json();
+    if (data.success) {
+      // Set dropdown
+      document.getElementById('temaBackground').value = data.temaBackground || 'default';
+      document.getElementById('warnaTeks').value = data.warnaTeks || '#ffffff';
+      document.getElementById('warnaTeksHex').value = data.warnaTeks || '#ffffff';
+      
+      // Apply theme
+      applyTheme(data.temaBackground || 'default', data.warnaTeks);
+      return true;
+    }
+  } catch (err) {
+    console.error('Gagal load tema:', err);
+  }
+  
+  // Default fallback
+  document.getElementById('temaBackground').value = 'default';
+  document.getElementById('warnaTeks').value = '#ffffff';
+  document.getElementById('warnaTeksHex').value = '#ffffff';
+  applyTheme('default', '#ffffff');
+  return false;
+}
+
+async function simpanTema() {
+  const temaBackground = document.getElementById('temaBackground').value;
+  let warnaTeks = document.getElementById('warnaTeksHex').value;
+  
+  // Validasi warna hex
+  if (!warnaTeks.match(/^#[0-9A-Fa-f]{6}$/)) {
+    tampilkanStatus('statusTema', '❌ Format warna tidak valid! Gunakan format HEX (contoh: #FFFFFF)', true);
+    return;
+  }
+  
+  tampilkanLoading();
+  try {
+    const params = new URLSearchParams({
+      action: 'updateTema',
+      temaBackground: temaBackground,
+      warnaTeks: warnaTeks
+    });
+    
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: params
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      // Apply theme langsung
+      applyTheme(temaBackground, warnaTeks);
+      tampilkanStatus('statusTema', '✅ Tema berhasil disimpan!');
+    } else {
+      tampilkanStatus('statusTema', '❌ Gagal: ' + (result.error || 'Error tidak diketahui'), true);
+    }
+  } catch (err) {
+    console.error('Error:', err);
+    tampilkanStatus('statusTema', '❌ Gagal menyimpan tema', true);
+  } finally {
+    sembunyikanLoading();
+  }
+}
+
+async function resetTema() {
+  tampilkanLoading();
+  try {
+    const params = new URLSearchParams({
+      action: 'resetTema'
+    });
+    
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: params
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      document.getElementById('temaBackground').value = 'default';
+      document.getElementById('warnaTeks').value = '#ffffff';
+      document.getElementById('warnaTeksHex').value = '#ffffff';
+      applyTheme('default', '#ffffff');
+      tampilkanStatus('statusTema', '✅ Tema berhasil direset ke default!');
+    } else {
+      tampilkanStatus('statusTema', '❌ Gagal reset tema', true);
+    }
+  } catch (err) {
+    console.error('Error:', err);
+    tampilkanStatus('statusTema', '❌ Gagal reset tema', true);
+  } finally {
+    sembunyikanLoading();
+  }
+}
+
+// Sinkronisasi input color dan text
+document.getElementById('warnaTeks').addEventListener('input', (e) => {
+  document.getElementById('warnaTeksHex').value = e.target.value;
+});
+
+document.getElementById('warnaTeksHex').addEventListener('input', (e) => {
+  let val = e.target.value;
+  if (!val.startsWith('#')) val = '#' + val;
+  if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+    document.getElementById('warnaTeks').value = val;
+  }
+});
+
+// Event listeners untuk tema
+document.getElementById('btnSimpanTema').addEventListener('click', simpanTema);
+document.getElementById('btnResetTema').addEventListener('click', resetTema);
+
+
 </script>
 </body>
 </html>
