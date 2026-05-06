@@ -15,10 +15,23 @@
     font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
 }
 
+:root {
+    --gradient-start: #020617;
+    --gradient-mid: #0f172a;
+    --gradient-end: #020617;
+    --text-primary: #ffffff;
+    --card-bg: rgba(15, 25, 45, 0.65);
+    --btn-gradient-start: #0ea5e9;
+    --btn-gradient-end: #3b82f6;
+    --border-color: rgba(56, 189, 248, 0.3);
+    --welcome-bg-start: #0f172a;
+    --welcome-bg-end: #020617;
+}
+
 body {
     min-height: 100vh;
-    background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
+    color: var(--text-primary);
     overflow-x: hidden;
     position: relative;
     padding: 20px;
@@ -65,9 +78,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at center, #0f172a, #020617);
+    background: radial-gradient(circle at center, var(--welcome-bg-start), var(--welcome-bg-end));
     z-index: 10000;
     backdrop-filter: blur(4px);
+    transition: background 0.3s ease;
 }
 .welcome-wrapper {
     padding: 0 24px;
@@ -94,16 +108,30 @@ body {
     color: transparent;
     opacity: 0;
     transform: scale(0.85) translateY(10px);
-    animation:
-        fadeInScale 1.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) 3s forwards,
-        glowCinematic 2.2s ease-in-out infinite alternate;
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-#welcomeText {
-    visibility: hidden;
+/* Class untuk animasi masuk */
+.welcome-text.animate-in {
+    opacity: 1;
+    transform: scale(1);
+    animation: glowCinematic 2.2s ease-in-out infinite alternate;
 }
-#welcomeText.show {
-    visibility: visible;
+
+/* Class untuk animasi keluar */
+.welcome-text.animate-out {
+    animation: fadeOutText 0.9s forwards !important;
+}
+
+@keyframes fadeOutText {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.2);
+    }
 }
 
 /* cinematic glow lebih halus */
@@ -117,23 +145,15 @@ body {
         filter: brightness(1.15);
     }
 }
-@keyframes fadeInScale {
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+
+/* Animasi fade out untuk welcome screen */
+.welcome-screen-fade-out {
+    animation: fadeOutScreen 0.9s forwards;
 }
-@keyframes glowPulse {
-    from { text-shadow: 0 0 5px #38bdf8; }
-    to { text-shadow: 0 0 30px #38bdf8, 0 0 45px #0ea5e9; }
-}
-.fade-out {
-    animation: fadeOutAnim 0.9s forwards;
-}
-@keyframes fadeOutAnim {
+
+@keyframes fadeOutScreen {
     to {
         opacity: 0;
-        transform: scale(1.2);
         visibility: hidden;
     }
 }
@@ -155,18 +175,17 @@ body {
     display: none;
 }
 
-/* ================= GLASS CARD (TENGAH VERTIKAL) ================= */
+/* ================= GLASS CARD ================= */
 .glass-card {
     backdrop-filter: blur(18px);
-    background: rgba(15, 25, 45, 0.65);
+    background: var(--card-bg);
     border-radius: 2.5rem;
-    border: 1px solid rgba(56, 189, 248, 0.3);
+    border: 1px solid var(--border-color);
     box-shadow: 0 25px 45px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.08);
     padding: 2rem 1.8rem;
     transition: all 0.2s;
 }
 
-/* Container utama untuk membuat glass-card di tengah vertikal */
 .main-container {
     display: flex;
     align-items: center;
@@ -201,7 +220,7 @@ body {
     border: 1px solid #334155;
     border-radius: 2rem;
     padding: 1rem 1.5rem;
-    color: white;
+    color: var(--text-primary);
     font-size: 1rem;
     outline: none;
     transition: 0.2s;
@@ -211,8 +230,17 @@ body {
     box-shadow: 0 0 12px rgba(56,189,248,0.4);
     background: rgba(255,255,255,0.12);
 }
+  
+.subtitle, .ketua {
+    color: var(--text-primary);
+}
+  
+.data-nama, .data-nisn, .data-ttl {
+    color: var(--text-primary);
+}
+
 .btn-primary {
-    background: linear-gradient(100deg, #0ea5e9, #3b82f6);
+    background: linear-gradient(100deg, var(--btn-gradient-start), var(--btn-gradient-end));
     border: none;
     border-radius: 3rem;
     padding: 1rem;
@@ -306,7 +334,6 @@ body {
     margin-bottom: 1rem;
 }
 
-/* DATA CENTER - Tanpa label, hanya value dengan ukuran berbeda */
 .data-center {
     margin: 1.5rem 0;
     text-align: center;
@@ -314,19 +341,16 @@ body {
 .data-nama {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #ffffff;
     margin-bottom: 0.5rem;
     word-break: break-word;
 }
 .data-nisn {
     font-size: 1.1rem;
-    color: #cbd5e1;
     margin-bottom: 0.5rem;
     letter-spacing: 1px;
 }
 .data-ttl {
     font-size: 0.95rem;
-    color: #94a3b8;
     margin-top: 0.3rem;
 }
 
@@ -336,10 +360,8 @@ body {
     padding-top: 1rem;
     font-style: italic;
     font-size: 0.85rem;
-    color: #a5f3fc;
 }
 
-/* Tombol tutup full width */
 .btn-close-full {
     background: #475569;
     border: none;
@@ -358,54 +380,16 @@ body {
     transform: scale(1.01);
 }
 
-.modal-confirm {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(12px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 21000;
-    padding: 1rem;
-}
-.confirm-inner {
-    background: #111827;
-    max-width: 400px;
-    border-radius: 2rem;
-    padding: 2rem;
-    text-align: center;
-    border: 1px solid #38bdf8;
-}
-.confirm-btns {
-    display: flex;
-    gap: 16px;
-    margin-top: 28px;
-}
-.confirm-btns button {
-    flex: 1;
-    padding: 10px;
-    border-radius: 50px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-}
-.btn-yes {
-    background: #0ea5e9;
-    color: white;
-}
-.btn-no {
-    background: #334155;
-    color: white;
-}
-
 @media (max-width: 550px) {
     .welcome-text { font-size: 42px; letter-spacing: 4px; }
-    .glass-card { padding: 1.5rem; }
+    .glass-card { 
+        background: var(--card-bg);
+        border-color: var(--border-color);
+        padding: 1.5rem; 
+    }
     .data-nama { font-size: 1.5rem; }
     .data-nisn { font-size: 1rem; }
 }
-
 </style>
 </head>
 <body>
@@ -437,19 +421,335 @@ body {
 </div>
 
 <script>
+
+
+document.addEventListener('copy', function(e) {
+    alert('Copy tidak diizinkan');
+    e.preventDefault();
+});
+
+
+(function() {
+        // Method 1: Deteksi resize window (DevTools dibuka)
+        function detectDevTools() {
+            const threshold = 160;
+            const widthDiff = window.outerWidth - window.innerWidth > threshold;
+            const heightDiff = window.outerHeight - window.innerHeight > threshold;
+            
+            if (widthDiff || heightDiff) {
+                showConsoleWarning();
+            }
+        }
+        
+        
+        // Method 3: Deteksi Firebug
+        function detectFirebug() {
+            if (window.console && (console.firebug || console.exception)) {
+                showConsoleWarning();
+            }
+        }
+        
+        // Method 4: Deteksi via console.log override
+        function showConsoleWarning() {
+            const warningStyles = [
+                'font-size: 20px',
+                'font-weight: bold',
+                'color: #ef4444',
+                'background: #1e1e1e',
+                'padding: 20px',
+                'border: 2px solid #ef4444',
+                'border-radius: 8px',
+                'text-shadow: 0 0 5px rgba(239,68,68,0.5)'
+            ].join(';');
+            
+            console.clear();
+            console.log('%c⚠️ PERINGATAN KEAMANAN! ⚠️', warningStyles);
+            console.log('%c', 'font-size: 14px; color: #fbbf24;');
+            console.log('%c🚫 Developer Tools terdeteksi!', 'font-size: 16px; color: #ef4444; font-weight: bold;');
+            console.log('%c', 'font-size: 14px; color: #94a3b8;');
+            console.log('%c', 'font-size: 14px; color: #94a3b8;');
+            console.log('%c🔒 Aplikasi ini dilindungi oleh GoAbs Security System', 'font-size: 12px; color: #667eea;');
+            console.log('%c📧 Laporkan aktivitas mencurigakan ke: admin@goabs.id', 'font-size: 12px; color: #667eea;');
+            console.log('%c', 'font-size: 14px; color: #94a3b8;');
+        }
+        
+        // Method 5: Override console methods (opsional - lebih agresif)
+        function protectConsole() {
+            const originalConsole = {
+                log: console.log,
+                warn: console.warn,
+                error: console.error,
+                info: console.info,
+                debug: console.debug,
+                table: console.table,
+                trace: console.trace
+            };
+        }
+        
+        // Method 6: Deteksi object console yang tidak standar
+        function detectConsoleOpen() {
+            const element = new Image();
+            Object.defineProperty(element, 'id', {
+                get: function() {
+                    showConsoleWarning();
+                    return '';
+                }
+            });
+            console.log('%c', element);
+        }
+        
+        // Method 7: Deteksi via window resize berulang
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                detectDevTools();
+            }, 100);
+        });
+        
+        // Method 8: Deteksi via mousemove (DevTools biasanya di kanan/bawah)
+        window.addEventListener('mousemove', function(e) {
+            if (e.clientX > window.innerWidth - 100 || e.clientY > window.innerHeight - 100) {
+                // Mouse di area yang mencurigakan
+            }
+        });
+        
+        // Method 9: Deteksi shortcut keyboard (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U)
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                showConsoleWarning();
+                return false;
+            }
+            
+            // Ctrl+Shift+I (Windows/Linux) atau Cmd+Option+I (Mac)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) {
+                e.preventDefault();
+                showConsoleWarning();
+                return false;
+            }
+            
+            // Ctrl+U (View Source)
+            if ((e.ctrlKey || e.metaKey) && e.keyCode === 85) {
+                e.preventDefault();
+                showConsoleWarning();
+                return false;
+            }
+            
+            // Ctrl+Shift+C (Inspect Element)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 67) {
+                e.preventDefault();
+                showConsoleWarning();
+                return false;
+            }
+        });
+        
+        // Blokir klik kanan
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Jalankan deteksi secara periodik
+        setInterval(function() {
+            detectDevTools();
+        }, 1000);
+        
+        // Jalankan saat halaman load
+        window.addEventListener('load', function() {
+            detectDevTools();
+            protectConsole();
+            
+            // Tampilkan pesan normal di console (untuk developer yang sah)
+            console.log('%c✅ GoAbs - Sistem Absensi Digital', 'font-size: 16px; color: #667eea; font-weight: bold;');
+            console.log('%c🚀 Aplikasi berjalan normal', 'font-size: 14px; color: #22c55e;');
+        });
+        
+        // Cegah select text
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        });
+        
+        // Deteksi jika user mencoba inspect element via context menu
+        window.addEventListener('beforeunload', function() {
+            // Cleanup
+        });
+        
+    })();
+
+    // ====== HARD BLOCK DEVTOOLS ======
+    function blockUserAccess() {
+        if (document.getElementById('blocked')) return;
+
+        const div = document.createElement('div');
+        div.id = 'blocked';
+        div.style.cssText = `
+            position:fixed;
+            inset:0;
+            background:#020617;
+            color:#ef4444;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:999999;
+        `;
+        div.innerHTML = '⚠️ Developer Tools terdeteksi';
+
+        document.body.appendChild(div);
+    }
+
+// Deteksi DevTools lebih sensitif
+function isDevToolsOpen() {
+    const threshold = 150;
+    return (
+        window.outerWidth - window.innerWidth > threshold ||
+        window.outerHeight - window.innerHeight > threshold
+    );
+}
+
+// Loop monitoring
+setInterval(() => {
+    if (isDevToolsOpen()) {
+        blockUserAccess();
+    }
+}, 800);
+
+
+// Proteksi tambahan: blur jika tab tidak aktif (indikasi inspect)
+document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+        document.body.style.filter = "blur(8px)";
+    } else {
+        document.body.style.filter = "none";
+    }
+});
+
+
+
 // ========== KONFIGURASI ==========
-// GANTI DENGAN URL WEB APP APPS SCRIPT ANDA!
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWAsabHqWTtxym8KC89PlLIzba0epq6JRB3TrxKGgH2lb62khAs_DsHYFAlxZ5kXMA/exec';
 
 let currentStudentData = null;
-
-// ========== DATA SEKOLAH (DINAMIS DARI SPREADSHEET) ==========
 let sekolahData = {
     namaSekolah: '',
     namaKepsek: ''
 };
 
-// ================= AMBIL DATA SEKOLAH DARI APPS SCRIPT =================
+// ============ FUNGSI TEMA ============
+function applyThemeFromSheet(backgroundColor, textColor) {
+  const root = document.documentElement;
+  
+  const temaGradasi = {
+    default: {
+      gradientStart: '#020617',
+      gradientMid: '#0f172a',
+      gradientEnd: '#020617',
+      btnStart: '#0ea5e9',
+      btnEnd: '#3b82f6',
+      borderColor: 'rgba(56, 189, 248, 0.3)',
+      cardBg: 'rgba(15, 25, 45, 0.65)',
+      welcomeStart: '#0f172a',
+      welcomeEnd: '#020617'
+    },
+    pink: {
+      gradientStart: '#4c0519',
+      gradientMid: '#9d174d',
+      gradientEnd: '#4c0519',
+      btnStart: '#ec4899',
+      btnEnd: '#db2777',
+      borderColor: 'rgba(236, 72, 153, 0.3)',
+      cardBg: 'rgba(30, 10, 30, 0.65)',
+      welcomeStart: '#4c0519',
+      welcomeEnd: '#2e0037'
+    },
+    tosca: {
+      gradientStart: '#042f2e',
+      gradientMid: '#0d9488',
+      gradientEnd: '#042f2e',
+      btnStart: '#14b8a6',
+      btnEnd: '#0d9488',
+      borderColor: 'rgba(20, 184, 166, 0.3)',
+      cardBg: 'rgba(10, 40, 40, 0.65)',
+      welcomeStart: '#042f2e',
+      welcomeEnd: '#021c1c'
+    },
+    ungu: {
+      gradientStart: '#2e1065',
+      gradientMid: '#7c3aed',
+      gradientEnd: '#2e1065',
+      btnStart: '#8b5cf6',
+      btnEnd: '#6d28d9',
+      borderColor: 'rgba(139, 92, 246, 0.3)',
+      cardBg: 'rgba(30, 15, 50, 0.65)',
+      welcomeStart: '#2e1065',
+      welcomeEnd: '#1a0540'
+    },
+    hijau: {
+      gradientStart: '#052e16',
+      gradientMid: '#16a34a',
+      gradientEnd: '#052e16',
+      btnStart: '#22c55e',
+      btnEnd: '#15803d',
+      borderColor: 'rgba(34, 197, 94, 0.3)',
+      cardBg: 'rgba(15, 40, 20, 0.65)',
+      welcomeStart: '#052e16',
+      welcomeEnd: '#021a0c'
+    },
+    putih: {
+      gradientStart: '#e2e8f0',
+      gradientMid: '#cbd5e1',
+      gradientEnd: '#e2e8f0',
+      btnStart: '#64748b',
+      btnEnd: '#475569',
+      borderColor: 'rgba(100, 116, 139, 0.4)',
+      cardBg: 'rgba(255, 255, 255, 0.2)',
+      welcomeStart: '#cbd5e1',
+      welcomeEnd: '#94a3b8'
+    }
+  };
+  
+  const tema = temaGradasi[backgroundColor] || temaGradasi.default;
+  
+  root.style.setProperty('--gradient-start', tema.gradientStart);
+  root.style.setProperty('--gradient-mid', tema.gradientMid);
+  root.style.setProperty('--gradient-end', tema.gradientEnd);
+  root.style.setProperty('--btn-gradient-start', tema.btnStart);
+  root.style.setProperty('--btn-gradient-end', tema.btnEnd);
+  root.style.setProperty('--border-color', tema.borderColor);
+  root.style.setProperty('--card-bg', tema.cardBg);
+  root.style.setProperty('--welcome-bg-start', tema.welcomeStart);
+  root.style.setProperty('--welcome-bg-end', tema.welcomeEnd);
+  
+  if (textColor && textColor !== '#undefined' && textColor !== 'null') {
+    root.style.setProperty('--text-primary', textColor);
+  } else if (backgroundColor === 'putih') {
+    root.style.setProperty('--text-primary', '#1e293b');
+  } else {
+    root.style.setProperty('--text-primary', '#ffffff');
+  }
+}
+
+async function loadTemaFromSheet() {
+  try {
+    const response = await fetch(`${APPS_SCRIPT_URL}?action=getTema&_=${Date.now()}`);
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log('Tema loaded:', data.temaBackground, data.warnaTeks);
+      applyThemeFromSheet(data.temaBackground || 'default', data.warnaTeks);
+      return true;
+    } else {
+      applyThemeFromSheet('default', '#ffffff');
+      return false;
+    }
+  } catch (err) {
+    console.error('Gagal load tema:', err);
+    applyThemeFromSheet('default', '#ffffff');
+    return false;
+  }
+}
+
 async function fetchDataSekolah() {
     try {
         const response = await fetch(`${APPS_SCRIPT_URL}?action=getSekolah`);
@@ -461,7 +761,6 @@ async function fetchDataSekolah() {
     } catch (err) {
         console.error('Gagal mengambil data sekolah:', err);
     }
-    // Update UI setelah data didapat
     updateUISekolah();
 }
 
@@ -469,9 +768,8 @@ function updateUISekolah() {
     const ns = sekolahData.namaSekolah;
     
     const welcomeEl = document.getElementById('welcomeText');
-    if (welcomeEl) {
+    if (welcomeEl && ns) {
         welcomeEl.innerText = ns.toUpperCase();
-        welcomeEl.classList.add('show'); // ← TAMPILKAN setelah teks di-set
     }
     
     document.getElementById('pageTitle').innerText = `${ns} - Pengumuman Kelulusan`;
@@ -480,23 +778,72 @@ function updateUISekolah() {
     if (subtitleEl) subtitleEl.innerText = `${ns}`;
 }
 
-// ================= TEXT TO SPEECH =================
+// ================= ANIMASI WELCOME SCREEN =================
+async function startWelcomeAnimation() {
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const welcomeText = document.getElementById('welcomeText');
+    const mainContent = document.getElementById('mainContent');
+    
+    // Pastikan teks sudah terisi
+    if (!welcomeText.innerText) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    // Trigger animasi masuk (zoom in)
+    welcomeText.classList.add('animate-in');
+    
+    // Tunggu 3 detik (lihat teks)
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Animasi keluar untuk teks
+    welcomeText.classList.add('animate-out');
+    
+    // Tunggu animasi teks keluar (0.9 detik)
+    await new Promise(resolve => setTimeout(resolve, 900));
+    
+    // Animasi keluar untuk welcome screen
+    welcomeScreen.classList.add('welcome-screen-fade-out');
+    
+    // Tunggu animasi screen keluar
+    await new Promise(resolve => setTimeout(resolve, 900));
+    
+    // Sembunyikan welcome screen dan tampilkan main content
+    welcomeScreen.style.display = 'none';
+    mainContent.classList.remove('hidden');
+    
+    // Trigger show main content
+    setTimeout(() => {
+        mainContent.classList.add('show');
+        speakText(`Selamat datang peserta didik ${sekolahData.namaSekolah}`);
+    }, 80);
+}
+
 function speakText(text) {
     if (!('speechSynthesis' in window)) return;
-
+    
+    // Batalkan speech yang sedang berjalan
+    speechSynthesis.cancel();
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'id-ID';
     utterance.rate = 0.9;
     utterance.pitch = 1;
-
-    const voices = speechSynthesis.getVoices();
-    const indoVoice = voices.find(v => v.lang === 'id-ID');
-    if (indoVoice) {
-        utterance.voice = indoVoice;
+    
+    // Tunggu voices loaded
+    const setVoice = () => {
+        const voices = speechSynthesis.getVoices();
+        const indoVoice = voices.find(v => v.lang === 'id-ID');
+        if (indoVoice) {
+            utterance.voice = indoVoice;
+        }
+        speechSynthesis.speak(utterance);
+    };
+    
+    if (speechSynthesis.getVoices().length) {
+        setVoice();
+    } else {
+        speechSynthesis.addEventListener('voiceschanged', setVoice, { once: true });
     }
-
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utterance);
 }
 
 async function searchStudentByNISN(nisn) {
@@ -519,7 +866,6 @@ function removeExistingModals() {
     document.querySelectorAll('.modal-overlay, .modal-confirm, .loading-overlay').forEach(el => el.remove());
 }
 
-// Fungsi loading dengan efek gelap di tengah screen
 function showLoadingSpinner() {
     removeExistingModals();
     const loadingDiv = document.createElement('div');
@@ -545,7 +891,6 @@ function showGraduationCard(student) {
     const tempatTanggal = `${student.tempatLahir || '-'}, ${tanggalFormatted}`;
     const isLulus = (student.status || "").toLowerCase() === "lulus";
     
-    // Gunakan data sekolah dinamis
     const ns = sekolahData.namaSekolah;
     const nks = sekolahData.namaKepsek;
     
@@ -570,12 +915,10 @@ function showGraduationCard(student) {
         document.body.appendChild(modalDiv);
         modalDiv.querySelector('#closeModalBtn').addEventListener('click', () => {
             modalDiv.remove();
-            window.location.reload();
         });
         return;
     }
     
-    // LULUS - dengan data sekolah dinamis
     speakText(`Selamat kepada ${student.nama}, Anda dinyatakan lulus`);
     const modalDiv = document.createElement('div');
     modalDiv.className = 'modal-overlay';
@@ -593,18 +936,16 @@ function showGraduationCard(student) {
             </div>
             
             <div class="ketua">
-                Ketua ${escapeHtml(ns)}<br><b>${escapeHtml(nks)}</b>
+                Kepala Sekolah <br>${escapeHtml(ns)}<br><br><b>${escapeHtml(nks)}</b>
             </div>
             
             <button class="btn-close-full" id="closeModalFinalBtn">Tutup</button>
-
         </div>
     `;
     document.body.appendChild(modalDiv);
     
     modalDiv.querySelector('#closeModalFinalBtn').addEventListener('click', () => {
         modalDiv.remove();
-        window.location.reload();
     });
 }
 
@@ -642,25 +983,20 @@ function escapeHtml(str) {
 
 // ================= INIT =================
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Ambil data sekolah DULU sebelum menampilkan apapun
-    await fetchDataSekolah();
+    // Tampilkan welcome screen dulu
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    welcomeScreen.style.display = 'flex';
     
-    const welcome = document.getElementById('welcomeScreen');
-    const main = document.getElementById('mainContent');
-
-    setTimeout(() => {
-        welcome.classList.add('fade-out');
-        setTimeout(() => {
-            welcome.style.display = 'none';
-            main.classList.remove('hidden');
-            setTimeout(() => {
-                main.classList.add('show');
-                // Pindah ke sini
-                speakText(`Selamat datang peserta didik ${sekolahData.namaSekolah}`);
-            }, 80);
-        }, 900);
-    }, 4400);
+    // JALANKAN FETCH SECARA PARALEL (bersamaan)
+    const [temaResult, sekolahResult] = await Promise.all([
+        loadTemaFromSheet(),
+        fetchDataSekolah()
+    ]);
     
+    // Mulai animasi welcome screen
+    await startWelcomeAnimation();
+    
+    // 4. Setup event listeners untuk form pencarian
     const searchBtn = document.getElementById('searchBtn');
     const nisnInput = document.getElementById('nisnInput');
     const infoMsg = document.getElementById('infoMessage');
